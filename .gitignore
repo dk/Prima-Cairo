@@ -1,0 +1,10 @@
+*.swp
+*.o
+Cairo.bs
+Cairo.c
+MYMETA.yml
+Makefile
+Makefile.old
+a.pl
+blib/
+pm_to_blib
