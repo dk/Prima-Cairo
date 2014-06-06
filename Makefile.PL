@@ -1,4 +1,3 @@
-# $Id$
 package MY;
 use strict;
 use ExtUtils::MakeMaker;
@@ -37,4 +36,13 @@ WriteMakefile(
 	DEFINE             => "$Prima::Config::Config{define} $cairo_cfg{cflags}",
 	INC                => "$Prima::Config::Config{inc} -Iinclude",
 	OBJECT             => "@obj",
+	META_MERGE        => {
+		resources => {
+			repository => 'http://github.com/dk/Prima-Cairo',
+		},
+		no_index  => {
+			directory  => [qw(include win32)],
+			file       => [qw(Makefile.PL)],
+		},
+	},
 );
