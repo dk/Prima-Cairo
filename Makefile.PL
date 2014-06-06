@@ -7,6 +7,14 @@ use Config;
 use Prima::Config;
 
 my @obj  = ('Cairo.o');
+if ( 
+	$^O eq 'MSWin32' or 
+	( $^O eq 'cygwin' and $Prima::Config::Config{platform} eq 'win32')
+) {
+	push @obj,  'win32.o';
+} else {
+	push @obj,  'x11.o';
+}
 
 my %cairo_cfg = ExtUtils::PkgConfig->find ("cairo >= 1.0.0");
 

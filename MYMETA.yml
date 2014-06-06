@@ -1,5 +1,5 @@
 ---
-abstract: unknown
+abstract: ~
 author:
   - 'Dmitry Karasik <dmitry@karasik.eu.org>'
 build_requires:
@@ -8,8 +8,9 @@ configure_requires:
   ExtUtils::Depends: 0.2
   ExtUtils::PkgConfig: 1
   Prima: 1.38
+distribution_type: module
 dynamic_config: 0
-generated_by: 'ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.120921'
+generated_by: 'ExtUtils::MakeMaker version 6.57_05'
 license: unknown
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html

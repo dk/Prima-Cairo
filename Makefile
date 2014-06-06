@@ -1,7 +1,7 @@
 # This Makefile is for the Prima::Cairo extension to perl.
 #
 # It was generated automatically by MakeMaker version
-# 6.64 (Revision: 66400) from the contents of
+# 6.57_05 (Revision: 65705) from the contents of
 # Makefile.PL. Don't edit this file, edit Makefile.PL instead.
 #
 #       ANY CHANGES MADE HERE WILL BE LOST!
@@ -15,14 +15,13 @@
 #     AUTHOR => [q[Dmitry Karasik <dmitry@karasik.eu.org>]]
 #     BUILD_REQUIRES => {  }
 #     CONFIGURE_REQUIRES => { Prima=>q[1.38], ExtUtils::Depends=>q[0.2], ExtUtils::PkgConfig=>q[1] }
-#     DEFINE => q[ -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng15  ]
-#     INC => q[-IC:\usr\local\perl\sb32.516.3\perl\site\lib\Prima\CORE -IC:\usr\local\perl\sb32.516.3\perl\site\lib\Prima\CORE\generic -Iinclude]
-#     LIBS => q[C:\usr\local\perl\sb32.516.3\perl\site\lib\auto\Prima\libPrima.a -lcairo -lgobject-2.0 -lffi -lpixman-1 -lfontconfig -lxcb-shm -lxcb-render -lXrender -lXext -lglib-2.0 -lintl -liconv -lpcre -lexpat -lfreetype -lbz2 -lpng15 -lm -lz -lX11 -lxcb -lXau -lXdmcp  ]
+#     DEFINE => q[ -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  ]
+#     INC => q[-I/usr/local/lib/perl/5.14.2/Prima/CORE -I/usr/local/lib/perl/5.14.2/Prima/CORE/generic -I/usr/local/include -I/usr/include/freetype2 -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/libpng12 -Iinclude]
+#     LIBS => q[ -lcairo  ]
 #     MIN_PERL_VERSION => q[5.008]
 #     NAME => q[Prima::Cairo]
-#     OBJECT => q[Cairo.o]
+#     OBJECT => q[Cairo.o x11.o]
 #     PREREQ_PM => { Prima=>q[1.38], Cairo=>q[1.104] }
-#     TEST_REQUIRES => {  }
 #     VERSION_FROM => q[lib/Prima/Cairo.pm]
 
 # --- MakeMaker post_initialize section:
@@ -30,39 +29,35 @@
 
 # --- MakeMaker const_config section:
 
-# These definitions are from config.sh (via C:/usr/local/perl/sb32.516.3/perl/lib/Config.pm).
+# These definitions are from config.sh (via /usr/lib/perl/5.14/Config.pm).
 # They may have been overridden via Makefile.PL or on the command line.
 AR = ar
-CC = gcc
-CCCDLFLAGS =  
-CCDLFLAGS =  
-DLEXT = dll
-DLSRC = dl_win32.xs
-EXE_EXT = .exe
-FULL_AR = 
-LD = g++
-LDDLFLAGS = -mdll -s -L"C:\usr\local\perl\sb32.516.3\perl\lib\CORE" -L"C:\usr\local\perl\sb32.516.3\c\lib"
-LDFLAGS = -s -L"C:\usr\local\perl\sb32.516.3\perl\lib\CORE" -L"C:\usr\local\perl\sb32.516.3\c\lib"
+CC = cc
+CCCDLFLAGS = -fPIC
+CCDLFLAGS = -Wl,-E
+DLEXT = so
+DLSRC = dl_dlopen.xs
+EXE_EXT = 
+FULL_AR = /usr/bin/ar
+LD = cc
+LDDLFLAGS = -shared -O2 -g -L/usr/local/lib -fstack-protector
+LDFLAGS =  -fstack-protector -L/usr/local/lib
 LIBC = 
 LIB_EXT = .a
 OBJ_EXT = .o
-OSNAME = MSWin32
-OSVERS = 4.0
-RANLIB = rem
-SITELIBEXP = C:\usr\local\perl\sb32.516.3\perl\site\lib
-SITEARCHEXP = C:\usr\local\perl\sb32.516.3\perl\site\lib
-SO = dll
-VENDORARCHEXP = C:\usr\local\perl\sb32.516.3\perl\vendor\lib
-VENDORLIBEXP = C:\usr\local\perl\sb32.516.3\perl\vendor\lib
+OSNAME = linux
+OSVERS = 2.6.42-37-generic
+RANLIB = :
+SITELIBEXP = /usr/local/share/perl/5.14.2
+SITEARCHEXP = /usr/local/lib/perl/5.14.2
+SO = so
+VENDORARCHEXP = /usr/lib/perl5
+VENDORLIBEXP = /usr/share/perl5
 
 
 # --- MakeMaker constants section:
-
-# Get dmake to read long commands like PM_TO_BLIB
-MAXLINELENGTH = 65536
-
 AR_STATIC_ARGS = cr
-DIRFILESEP = \\
+DIRFILESEP = /
 DFSEP = $(DIRFILESEP)
 NAME = Prima::Cairo
 NAME_SYM = Prima_Cairo
@@ -73,66 +68,66 @@ DEFINE_VERSION = -D$(VERSION_MACRO)=\"$(VERSION)\"
 XS_VERSION = 0.01
 XS_VERSION_MACRO = XS_VERSION
 XS_DEFINE_VERSION = -D$(XS_VERSION_MACRO)=\"$(XS_VERSION)\"
-INST_ARCHLIB = blib\arch
-INST_SCRIPT = blib\script
-INST_BIN = blib\bin
-INST_LIB = blib\lib
-INST_MAN1DIR = blib\man1
-INST_MAN3DIR = blib\man3
-MAN1EXT = 1
-MAN3EXT = 3
+INST_ARCHLIB = blib/arch
+INST_SCRIPT = blib/script
+INST_BIN = blib/bin
+INST_LIB = blib/lib
+INST_MAN1DIR = blib/man1
+INST_MAN3DIR = blib/man3
+MAN1EXT = 1p
+MAN3EXT = 3pm
 INSTALLDIRS = site
 DESTDIR = 
-PREFIX = $(SITEPREFIX)
-PERLPREFIX = C:\usr\local\perl\sb32.516.3\perl
-SITEPREFIX = C:\usr\local\perl\sb32.516.3\perl\site
-VENDORPREFIX = C:\usr\local\perl\sb32.516.3\perl\vendor
-INSTALLPRIVLIB = C:\usr\local\perl\sb32.516.3\perl\lib
+PREFIX = /usr
+PERLPREFIX = $(PREFIX)
+SITEPREFIX = $(PREFIX)/local
+VENDORPREFIX = $(PREFIX)
+INSTALLPRIVLIB = $(PERLPREFIX)/share/perl/5.14
 DESTINSTALLPRIVLIB = $(DESTDIR)$(INSTALLPRIVLIB)
-INSTALLSITELIB = C:\usr\local\perl\sb32.516.3\perl\site\lib
+INSTALLSITELIB = $(SITEPREFIX)/share/perl/5.14.2
 DESTINSTALLSITELIB = $(DESTDIR)$(INSTALLSITELIB)
-INSTALLVENDORLIB = C:\usr\local\perl\sb32.516.3\perl\vendor\lib
+INSTALLVENDORLIB = $(VENDORPREFIX)/share/perl5
 DESTINSTALLVENDORLIB = $(DESTDIR)$(INSTALLVENDORLIB)
-INSTALLARCHLIB = C:\usr\local\perl\sb32.516.3\perl\lib
+INSTALLARCHLIB = $(PERLPREFIX)/lib/perl/5.14
 DESTINSTALLARCHLIB = $(DESTDIR)$(INSTALLARCHLIB)
-INSTALLSITEARCH = C:\usr\local\perl\sb32.516.3\perl\site\lib
+INSTALLSITEARCH = $(SITEPREFIX)/lib/perl/5.14.2
 DESTINSTALLSITEARCH = $(DESTDIR)$(INSTALLSITEARCH)
-INSTALLVENDORARCH = C:\usr\local\perl\sb32.516.3\perl\vendor\lib
+INSTALLVENDORARCH = $(VENDORPREFIX)/lib/perl5
 DESTINSTALLVENDORARCH = $(DESTDIR)$(INSTALLVENDORARCH)
-INSTALLBIN = C:\usr\local\perl\sb32.516.3\perl\bin
+INSTALLBIN = $(PERLPREFIX)/bin
 DESTINSTALLBIN = $(DESTDIR)$(INSTALLBIN)
-INSTALLSITEBIN = C:\usr\local\perl\sb32.516.3\perl\site\bin
+INSTALLSITEBIN = $(SITEPREFIX)/bin
 DESTINSTALLSITEBIN = $(DESTDIR)$(INSTALLSITEBIN)
-INSTALLVENDORBIN = C:\usr\local\perl\sb32.516.3\perl\bin
+INSTALLVENDORBIN = $(VENDORPREFIX)/bin
 DESTINSTALLVENDORBIN = $(DESTDIR)$(INSTALLVENDORBIN)
-INSTALLSCRIPT = C:\usr\local\perl\sb32.516.3\perl\bin
+INSTALLSCRIPT = $(PERLPREFIX)/bin
 DESTINSTALLSCRIPT = $(DESTDIR)$(INSTALLSCRIPT)
-INSTALLSITESCRIPT = C:\usr\local\perl\sb32.516.3\perl\site\bin
+INSTALLSITESCRIPT = $(SITEPREFIX)/bin
 DESTINSTALLSITESCRIPT = $(DESTDIR)$(INSTALLSITESCRIPT)
-INSTALLVENDORSCRIPT = C:\usr\local\perl\sb32.516.3\perl\bin
+INSTALLVENDORSCRIPT = $(VENDORPREFIX)/bin
 DESTINSTALLVENDORSCRIPT = $(DESTDIR)$(INSTALLVENDORSCRIPT)
-INSTALLMAN1DIR = none
+INSTALLMAN1DIR = $(PERLPREFIX)/share/man/man1
 DESTINSTALLMAN1DIR = $(DESTDIR)$(INSTALLMAN1DIR)
-INSTALLSITEMAN1DIR = $(INSTALLMAN1DIR)
+INSTALLSITEMAN1DIR = $(SITEPREFIX)/man/man1
 DESTINSTALLSITEMAN1DIR = $(DESTDIR)$(INSTALLSITEMAN1DIR)
-INSTALLVENDORMAN1DIR = $(INSTALLMAN1DIR)
+INSTALLVENDORMAN1DIR = $(VENDORPREFIX)/share/man/man1
 DESTINSTALLVENDORMAN1DIR = $(DESTDIR)$(INSTALLVENDORMAN1DIR)
-INSTALLMAN3DIR = none
+INSTALLMAN3DIR = $(PERLPREFIX)/share/man/man3
 DESTINSTALLMAN3DIR = $(DESTDIR)$(INSTALLMAN3DIR)
-INSTALLSITEMAN3DIR = $(INSTALLMAN3DIR)
+INSTALLSITEMAN3DIR = $(SITEPREFIX)/man/man3
 DESTINSTALLSITEMAN3DIR = $(DESTDIR)$(INSTALLSITEMAN3DIR)
-INSTALLVENDORMAN3DIR = $(INSTALLMAN3DIR)
+INSTALLVENDORMAN3DIR = $(VENDORPREFIX)/share/man/man3
 DESTINSTALLVENDORMAN3DIR = $(DESTDIR)$(INSTALLVENDORMAN3DIR)
-PERL_LIB = C:\usr\local\perl\sb32.516.3\perl\lib
-PERL_ARCHLIB = C:\usr\local\perl\sb32.516.3\perl\lib
+PERL_LIB = /usr/share/perl/5.14
+PERL_ARCHLIB = /usr/lib/perl/5.14
 LIBPERL_A = libperl.a
 FIRST_MAKEFILE = Makefile
 MAKEFILE_OLD = Makefile.old
 MAKE_APERL_FILE = Makefile.aperl
 PERLMAINCC = $(CC)
-PERL_INC = C:\usr\local\perl\sb32.516.3\perl\lib\CORE
-PERL = C:\usr\local\perl\sb32.516.3\perl\bin\perl.exe
-FULLPERL = C:\usr\local\perl\sb32.516.3\perl\bin\perl.exe
+PERL_INC = /usr/lib/perl/5.14/CORE
+PERL = /usr/bin/perl
+FULLPERL = /usr/bin/perl
 ABSPERL = $(PERL)
 PERLRUN = $(PERL)
 FULLPERLRUN = $(FULLPERL)
@@ -145,31 +140,33 @@ PERM_DIR = 755
 PERM_RW = 644
 PERM_RWX = 755
 
-MAKEMAKER   = C:/usr/local/perl/sb32.516.3/perl/lib/ExtUtils/MakeMaker.pm
-MM_VERSION  = 6.64
-MM_REVISION = 66400
+MAKEMAKER   = /usr/share/perl/5.14/ExtUtils/MakeMaker.pm
+MM_VERSION  = 6.57_05
+MM_REVISION = 65705
 
 # FULLEXT = Pathname for extension directory (eg Foo/Bar/Oracle).
 # BASEEXT = Basename part of FULLEXT. May be just equal FULLEXT. (eg Oracle)
 # PARENT_NAME = NAME without BASEEXT and no trailing :: (eg Foo::Bar)
 # DLBASE  = Basename part of dynamic library. May be just equal BASEEXT.
-MAKE = dmake
-FULLEXT = Prima\Cairo
+MAKE = make
+FULLEXT = Prima/Cairo
 BASEEXT = Cairo
 PARENT_NAME = Prima
 DLBASE = $(BASEEXT)
 VERSION_FROM = lib/Prima/Cairo.pm
-INC = -IC:\usr\local\perl\sb32.516.3\perl\site\lib\Prima\CORE -IC:\usr\local\perl\sb32.516.3\perl\site\lib\Prima\CORE\generic -Iinclude
-DEFINE =  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng15  
-OBJECT = Cairo$(OBJ_EXT)
+INC = -I/usr/local/lib/perl/5.14.2/Prima/CORE -I/usr/local/lib/perl/5.14.2/Prima/CORE/generic -I/usr/local/include -I/usr/include/freetype2 -I/usr/include/gtk-2.0 -I/usr/lib/x86_64-linux-gnu/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 -I/usr/include/gio-unix-2.0/ -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/libpng12 -Iinclude
+DEFINE =  -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 -I/usr/include/libpng12  
+OBJECT = Cairo$(OBJ_EXT) x11$(OBJ_EXT)
 LDFROM = $(OBJECT)
 LINKTYPE = dynamic
 BOOTDEP = 
 
 # Handy lists of source code files:
-XS_FILES = 
-C_FILES  = 
-O_FILES  = 
+XS_FILES = Cairo.xs
+C_FILES  = Cairo.c \
+	x11.c
+O_FILES  = Cairo.o \
+	x11.o
 H_FILES  = 
 MAN1PODS = 
 MAN3PODS = 
@@ -178,77 +175,82 @@ MAN3PODS =
 CONFIGDEP = $(PERL_ARCHLIB)$(DFSEP)Config.pm $(PERL_INC)$(DFSEP)config.h
 
 # Where to build things
-INST_LIBDIR      = $(INST_LIB)\Prima
-INST_ARCHLIBDIR  = $(INST_ARCHLIB)\Prima
+INST_LIBDIR      = $(INST_LIB)/Prima
+INST_ARCHLIBDIR  = $(INST_ARCHLIB)/Prima
 
-INST_AUTODIR     = $(INST_LIB)\auto\$(FULLEXT)
-INST_ARCHAUTODIR = $(INST_ARCHLIB)\auto\$(FULLEXT)
+INST_AUTODIR     = $(INST_LIB)/auto/$(FULLEXT)
+INST_ARCHAUTODIR = $(INST_ARCHLIB)/auto/$(FULLEXT)
 
-INST_STATIC      = $(INST_ARCHAUTODIR)\$(BASEEXT)$(LIB_EXT)
-INST_DYNAMIC     = $(INST_ARCHAUTODIR)\$(DLBASE).$(DLEXT)
-INST_BOOT        = $(INST_ARCHAUTODIR)\$(BASEEXT).bs
+INST_STATIC      = $(INST_ARCHAUTODIR)/$(BASEEXT)$(LIB_EXT)
+INST_DYNAMIC     = $(INST_ARCHAUTODIR)/$(DLBASE).$(DLEXT)
+INST_BOOT        = $(INST_ARCHAUTODIR)/$(BASEEXT).bs
 
 # Extra linker info
-EXPORT_LIST        = $(BASEEXT).def
-PERL_ARCHIVE       = $(PERL_INC)\libperl516.a
+EXPORT_LIST        = 
+PERL_ARCHIVE       = 
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = lib/Prima/Cairo.pm
+TO_INST_PM = a.pl \
+	lib/Prima/Cairo.pm
 
-PM_TO_BLIB = lib/Prima/Cairo.pm \
-	blib\lib\Prima\Cairo.pm
+PM_TO_BLIB = a.pl \
+	$(INST_LIB)/Prima/a.pl \
+	lib/Prima/Cairo.pm \
+	blib/lib/Prima/Cairo.pm
 
 
 # --- MakeMaker platform_constants section:
-MM_Win32_VERSION = 6.64
+MM_Unix_VERSION = 6.57_05
+PERL_MALLOC_DEF = -DPERL_EXTMALLOC_DEF -Dmalloc=Perl_malloc -Dfree=Perl_mfree -Drealloc=Perl_realloc -Dcalloc=Perl_calloc
 
 
 # --- MakeMaker tool_autosplit section:
 # Usage: $(AUTOSPLITFILE) FileToSplit AutoDirToSplitInto
-AUTOSPLITFILE = $(ABSPERLRUN)  -e "use AutoSplit;  autosplit($$$$ARGV[0], $$$$ARGV[1], 0, 1, 1)" --
+AUTOSPLITFILE = $(ABSPERLRUN)  -e 'use AutoSplit;  autosplit($$ARGV[0], $$ARGV[1], 0, 1, 1)' --
 
 
 
 # --- MakeMaker tool_xsubpp section:
 
-XSUBPPDIR = C:\usr\local\perl\sb32.516.3\perl\lib\ExtUtils
+XSUBPPDIR = /usr/local/share/perl/5.14.2/ExtUtils
 XSUBPP = $(XSUBPPDIR)$(DFSEP)xsubpp
 XSUBPPRUN = $(PERLRUN) $(XSUBPP)
 XSPROTOARG = 
-XSUBPPDEPS = C:\usr\local\perl\sb32.516.3\perl\lib\ExtUtils\typemap $(XSUBPP)
-XSUBPPARGS = -typemap C:\usr\local\perl\sb32.516.3\perl\lib\ExtUtils\typemap
+XSUBPPDEPS = /usr/share/perl/5.14/ExtUtils/typemap $(XSUBPP)
+XSUBPPARGS = -typemap /usr/share/perl/5.14/ExtUtils/typemap
 XSUBPP_EXTRA_ARGS = 
 
 
 # --- MakeMaker tools_other section:
-CHMOD = $(ABSPERLRUN) -MExtUtils::Command -e chmod --
-CP = $(ABSPERLRUN) -MExtUtils::Command -e cp --
-MV = $(ABSPERLRUN) -MExtUtils::Command -e mv --
-NOOP = rem
+SHELL = /bin/sh
+CHMOD = chmod
+CP = cp
+MV = mv
+NOOP = $(TRUE)
 NOECHO = @
-RM_F = $(ABSPERLRUN) -MExtUtils::Command -e rm_f --
-RM_RF = $(ABSPERLRUN) -MExtUtils::Command -e rm_rf --
-TEST_F = $(ABSPERLRUN) -MExtUtils::Command -e test_f --
-TOUCH = $(ABSPERLRUN) -MExtUtils::Command -e touch --
+RM_F = rm -f
+RM_RF = rm -rf
+TEST_F = test -f
+TOUCH = touch
 UMASK_NULL = umask 0
-DEV_NULL = > NUL
-MKPATH = $(ABSPERLRUN) -MExtUtils::Command -e mkpath --
-EQUALIZE_TIMESTAMP = $(ABSPERLRUN) -MExtUtils::Command -e eqtime --
-FALSE = $(ABSPERLRUN)  -e "exit 1" --
-TRUE = $(ABSPERLRUN)  -e "exit 0" --
-ECHO = $(ABSPERLRUN) -l -e "print qq{{@ARGV}}" --
-ECHO_N = $(ABSPERLRUN)  -e "print qq{{@ARGV}}" --
+DEV_NULL = > /dev/null 2>&1
+MKPATH = $(ABSPERLRUN) -MExtUtils::Command -e 'mkpath' --
+EQUALIZE_TIMESTAMP = $(ABSPERLRUN) -MExtUtils::Command -e 'eqtime' --
+FALSE = false
+TRUE = true
+ECHO = echo
+ECHO_N = echo -n
 UNINST = 0
 VERBINST = 0
-MOD_INSTALL = $(ABSPERLRUN) -MExtUtils::Install -e "install([ from_to => {{@ARGV}}, verbose => '$(VERBINST)', uninstall_shadows => '$(UNINST)', dir_mode => '$(PERM_DIR)' ]);" --
-DOC_INSTALL = $(ABSPERLRUN) -MExtUtils::Command::MM -e perllocal_install --
-UNINSTALL = $(ABSPERLRUN) -MExtUtils::Command::MM -e uninstall --
-WARN_IF_OLD_PACKLIST = $(ABSPERLRUN) -MExtUtils::Command::MM -e warn_if_old_packlist --
+MOD_INSTALL = $(ABSPERLRUN) -MExtUtils::Install -e 'install([ from_to => {@ARGV}, verbose => '\''$(VERBINST)'\'', uninstall_shadows => '\''$(UNINST)'\'', dir_mode => '\''$(PERM_DIR)'\'' ]);' --
+DOC_INSTALL = $(ABSPERLRUN) -MExtUtils::Command::MM -e 'perllocal_install' --
+UNINSTALL = $(ABSPERLRUN) -MExtUtils::Command::MM -e 'uninstall' --
+WARN_IF_OLD_PACKLIST = $(ABSPERLRUN) -MExtUtils::Command::MM -e 'warn_if_old_packlist' --
 MACROSTART = 
 MACROEND = 
 USEMAKEFILE = -f
-FIXIN = pl2bat.bat
+FIXIN = $(ABSPERLRUN) -MExtUtils::MY -e 'MY->fixin(shift)' --
 
 
 # --- MakeMaker makemakerdflt section:
@@ -283,9 +285,10 @@ DISTVNAME = Prima-Cairo-0.01
 
 # --- MakeMaker cflags section:
 
-CCFLAGS = -s -O2 -DWIN32 -DPERL_TEXTMODE_SCRIPTS -DPERL_IMPLICIT_CONTEXT -DPERL_IMPLICIT_SYS -fno-strict-aliasing -mms-bitfields
-OPTIMIZE = -s -O2
+CCFLAGS = -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+OPTIMIZE = -O2 -g
 PERLTYPE = 
+MPOLLUTE = 
 
 
 # --- MakeMaker const_loadlibs section:
@@ -293,8 +296,8 @@ PERLTYPE =
 # Prima::Cairo might depend on some other libraries:
 # See ExtUtils::Liblist for details
 #
-EXTRALIBS = C:\usr\local\perl\sb32.516.3\perl\site\lib\auto\Prima\libPrima.a C:\usr\local\perl\sb32.516.3\c\lib\libiconv.a C:\usr\local\perl\sb32.516.3\c\lib\libexpat.a C:\usr\local\perl\sb32.516.3\c\lib\libfreetype.a C:\usr\local\perl\sb32.516.3\c\lib\libpng15.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libm.a C:\usr\local\perl\sb32.516.3\c\lib\libz.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libmoldname.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libkernel32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libuser32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libgdi32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libwinspool.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libcomdlg32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libadvapi32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libshell32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libole32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\liboleaut32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libnetapi32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libuuid.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libws2_32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libmpr.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libwinmm.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libversion.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libodbc32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libodbccp32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libcomctl32.a
-LDLOADLIBS = C:\usr\local\perl\sb32.516.3\perl\site\lib\auto\Prima\libPrima.a C:\usr\local\perl\sb32.516.3\c\lib\libiconv.a C:\usr\local\perl\sb32.516.3\c\lib\libexpat.a C:\usr\local\perl\sb32.516.3\c\lib\libfreetype.a C:\usr\local\perl\sb32.516.3\c\lib\libpng15.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libm.a C:\usr\local\perl\sb32.516.3\c\lib\libz.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libmoldname.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libkernel32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libuser32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libgdi32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libwinspool.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libcomdlg32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libadvapi32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libshell32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libole32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\liboleaut32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libnetapi32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libuuid.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libws2_32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libmpr.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libwinmm.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libversion.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libodbc32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libodbccp32.a C:\usr\local\perl\sb32.516.3\c\i686-w64-mingw32\lib\libcomctl32.a
+EXTRALIBS = -lcairo
+LDLOADLIBS = -lcairo
 BSLOADLIBS = 
 
 
@@ -308,20 +311,26 @@ CCCMD = $(CC) -c $(PASTHRU_INC) $(INC) \
 
 
 # --- MakeMaker pasthru section:
-PASTHRU = 
+
+PASTHRU = LIBPERL_A="$(LIBPERL_A)"\
+	LINKTYPE="$(LINKTYPE)"\
+	OPTIMIZE="$(OPTIMIZE)"\
+	PREFIX="$(PREFIX)"\
+	PASTHRU_DEFINE="$(PASTHRU_DEFINE)"\
+	PASTHRU_INC="$(PASTHRU_INC)"
+
 
 # --- MakeMaker special_targets section:
 .SUFFIXES : .xs .c .C .cpp .i .s .cxx .cc $(OBJ_EXT)
 
 .PHONY: all config static dynamic test linkext manifest blibdirs clean realclean disttest distdir
 
-.USESHELL :
 
 
 # --- MakeMaker c_o section:
 
 .c.i:
-	gcc -E -c $(PASTHRU_INC) $(INC) \
+	cc -E -c $(PASTHRU_INC) $(INC) \
 	$(CCFLAGS) $(OPTIMIZE) \
 	$(PERLTYPE) $(MPOLLUTE) $(DEFINE_VERSION) \
 	$(XS_DEFINE_VERSION) $(CCCDLFLAGS) "-I$(PERL_INC)" $(PASTHRU_DEFINE) $(DEFINE) $*.c > $*.i
@@ -341,6 +350,9 @@ PASTHRU =
 .cc$(OBJ_EXT):
 	$(CCCMD) $(CCCDLFLAGS) "-I$(PERL_INC)" $(PASTHRU_DEFINE) $(DEFINE) $*.cc
 
+.C$(OBJ_EXT):
+	$(CCCMD) $(CCCDLFLAGS) "-I$(PERL_INC)" $(PASTHRU_DEFINE) $(DEFINE) $*.C
+
 
 # --- MakeMaker xs_c section:
 
@@ -350,9 +362,13 @@ PASTHRU =
 
 # --- MakeMaker xs_o section:
 
+.xs$(OBJ_EXT):
+	$(XSUBPPRUN) $(XSPROTOARG) $(XSUBPPARGS) $*.xs > $*.xsc && $(MV) $*.xsc $*.c
+	$(CCCMD) $(CCCDLFLAGS) "-I$(PERL_INC)" $(PASTHRU_DEFINE) $(DEFINE) $*.c
+
 
 # --- MakeMaker top_targets section:
-all :: pure_all
+all :: pure_all manifypods
 	$(NOECHO) $(NOOP)
 
 
@@ -427,10 +443,6 @@ linkext :: $(LINKTYPE)
 
 # --- MakeMaker dlsyms section:
 
-Cairo.def: Makefile.PL
-	$(PERLRUN) -MExtUtils::Mksymlists \
-     -e "Mksymlists('NAME'=>\"Prima::Cairo\", 'DLBASE' => '$(BASEEXT)', 'DL_FUNCS' => {  }, 'FUNCLIST' => [], 'IMPORTS' => {  }, 'DL_VARS' => []);"
-
 
 # --- MakeMaker dynamic section:
 
@@ -462,14 +474,16 @@ $(INST_BOOT) : $(BOOTSTRAP) $(INST_ARCHAUTODIR)$(DFSEP).exists
 
 # This section creates the dynamically loadable $(INST_DYNAMIC)
 # from $(OBJECT) and possibly $(MYEXTLIB).
+ARMAYBE = :
 OTHERLDFLAGS = 
 INST_DYNAMIC_DEP = 
+INST_DYNAMIC_FIX = 
 
-$(INST_DYNAMIC): $(OBJECT) $(MYEXTLIB) $(BOOTSTRAP) $(INST_ARCHAUTODIR)$(DFSEP).exists $(EXPORT_LIST) $(PERL_ARCHIVE) $(INST_DYNAMIC_DEP)
-	dlltool --def $(EXPORT_LIST) --output-exp dll.exp
-	$(LD) -o $@ -Wl,--base-file -Wl,dll.base $(LDDLFLAGS) $(LDFROM) $(OTHERLDFLAGS) $(MYEXTLIB) $(PERL_ARCHIVE) $(LDLOADLIBS) dll.exp
-	dlltool --def $(EXPORT_LIST) --base-file dll.base --output-exp dll.exp
-	$(LD) -o $@ $(LDDLFLAGS) $(LDFROM) $(OTHERLDFLAGS) $(MYEXTLIB) $(PERL_ARCHIVE) $(LDLOADLIBS) dll.exp 
+$(INST_DYNAMIC): $(OBJECT) $(MYEXTLIB) $(BOOTSTRAP) $(INST_ARCHAUTODIR)$(DFSEP).exists $(EXPORT_LIST) $(PERL_ARCHIVE) $(PERL_ARCHIVE_AFTER) $(INST_DYNAMIC_DEP)
+	$(RM_F) $@
+	$(LD)  $(LDDLFLAGS) $(LDFROM) $(OTHERLDFLAGS) -o $@ $(MYEXTLIB)	\
+	  $(PERL_ARCHIVE) $(LDLOADLIBS) $(PERL_ARCHIVE_AFTER) $(EXPORT_LIST)	\
+	  $(INST_DYNAMIC_FIX)
 	$(CHMOD) $(PERM_RWX) $@
 
 
@@ -482,11 +496,12 @@ static :: $(FIRST_MAKEFILE) $(INST_STATIC)
 
 
 # --- MakeMaker static_lib section:
-$(INST_STATIC): $(OBJECT) $(MYEXTLIB) $(INST_ARCHAUTODIR)$(DFSEP).exists
+
+$(INST_STATIC) : $(OBJECT) $(MYEXTLIB) $(INST_ARCHAUTODIR)$(DFSEP).exists
 	$(RM_RF) $@
-	$(AR) -ru $@ $(OBJECT)
+	$(FULL_AR) $(AR_STATIC_ARGS) $@ $(OBJECT) && $(RANLIB) $@
 	$(CHMOD) $(PERM_RWX) $@
-	$(NOECHO) $(ECHO) "$(EXTRALIBS)" > $(INST_ARCHAUTODIR)\extralibs.ld
+	$(NOECHO) $(ECHO) "$(EXTRALIBS)" > $(INST_ARCHAUTODIR)/extralibs.ld
 
 
 # --- MakeMaker manifypods section:
@@ -524,14 +539,14 @@ clean_subdirs :
 clean :: clean_subdirs
 	- $(RM_F) \
 	  *$(LIB_EXT) core \
-	  core.[0-9] core.[0-9][0-9] \
-	  $(BASEEXT).bso $(INST_ARCHAUTODIR)\extralibs.ld \
-	  pm_to_blib.ts MYMETA.json \
-	  core.[0-9][0-9][0-9][0-9] MYMETA.yml \
-	  $(BASEEXT).x $(BOOTSTRAP) \
-	  perl$(EXE_EXT) tmon.out \
-	  $(INST_ARCHAUTODIR)\extralibs.all *$(OBJ_EXT) \
-	  pm_to_blib blibdirs.ts \
+	  core.[0-9] $(INST_ARCHAUTODIR)/extralibs.all \
+	  core.[0-9][0-9] $(BASEEXT).bso \
+	  pm_to_blib.ts core.[0-9][0-9][0-9][0-9] \
+	  MYMETA.yml $(BASEEXT).x \
+	  $(BOOTSTRAP) perl$(EXE_EXT) \
+	  tmon.out *$(OBJ_EXT) \
+	  pm_to_blib $(INST_ARCHAUTODIR)/extralibs.ld \
+	  blibdirs.ts Cairo.c \
 	  core.[0-9][0-9][0-9][0-9][0-9] *perl.core \
 	  core.*perl.*.? $(MAKE_APERL_FILE) \
 	  $(BASEEXT).def perl \
@@ -540,7 +555,6 @@ clean :: clean_subdirs
 	  perl.exe so_locations \
 	  $(BASEEXT).exp 
 	- $(RM_RF) \
-	  dll.exp dll.base \
 	  blib 
 	- $(MV) $(FIRST_MAKEFILE) $(MAKEFILE_OLD) $(DEV_NULL)
 
@@ -563,80 +577,33 @@ realclean purge ::  clean realclean_subdirs
 # --- MakeMaker metafile section:
 metafile : create_distdir
 	$(NOECHO) $(ECHO) Generating META.yml
-	$(NOECHO) $(ECHO) --- > META_new.yml
-	$(NOECHO) $(ECHO) "abstract: unknown" >> META_new.yml
-	$(NOECHO) $(ECHO) author: >> META_new.yml
-	$(NOECHO) $(ECHO) "  - 'Dmitry Karasik <dmitry@karasik.eu.org>'" >> META_new.yml
-	$(NOECHO) $(ECHO) build_requires: >> META_new.yml
-	$(NOECHO) $(ECHO) "  ExtUtils::MakeMaker: 0" >> META_new.yml
-	$(NOECHO) $(ECHO) configure_requires: >> META_new.yml
-	$(NOECHO) $(ECHO) "  ExtUtils::Depends: 0.2" >> META_new.yml
-	$(NOECHO) $(ECHO) "  ExtUtils::PkgConfig: 1" >> META_new.yml
-	$(NOECHO) $(ECHO) "  Prima: 1.38" >> META_new.yml
-	$(NOECHO) $(ECHO) "dynamic_config: 1" >> META_new.yml
-	$(NOECHO) $(ECHO) "generated_by: 'ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.120921'" >> META_new.yml
-	$(NOECHO) $(ECHO) "license: unknown" >> META_new.yml
-	$(NOECHO) $(ECHO) meta-spec: >> META_new.yml
-	$(NOECHO) $(ECHO) "  url: http://module-build.sourceforge.net/META-spec-v1.4.html" >> META_new.yml
-	$(NOECHO) $(ECHO) "  version: 1.4" >> META_new.yml
-	$(NOECHO) $(ECHO) "name: Prima-Cairo" >> META_new.yml
-	$(NOECHO) $(ECHO) no_index: >> META_new.yml
-	$(NOECHO) $(ECHO) "  directory:" >> META_new.yml
-	$(NOECHO) $(ECHO) "    - t" >> META_new.yml
-	$(NOECHO) $(ECHO) "    - inc" >> META_new.yml
-	$(NOECHO) $(ECHO) requires: >> META_new.yml
-	$(NOECHO) $(ECHO) "  Cairo: 1.104" >> META_new.yml
-	$(NOECHO) $(ECHO) "  Prima: 1.38" >> META_new.yml
-	$(NOECHO) $(ECHO) "  perl: 5.008" >> META_new.yml
-	$(NOECHO) $(ECHO) "version: 0.01" >> META_new.yml
+	$(NOECHO) $(ECHO) '--- #YAML:1.0' > META_new.yml
+	$(NOECHO) $(ECHO) 'name:               Prima-Cairo' >> META_new.yml
+	$(NOECHO) $(ECHO) 'version:            0.01' >> META_new.yml
+	$(NOECHO) $(ECHO) 'abstract:           ~' >> META_new.yml
+	$(NOECHO) $(ECHO) 'author:' >> META_new.yml
+	$(NOECHO) $(ECHO) '    - Dmitry Karasik <dmitry@karasik.eu.org>' >> META_new.yml
+	$(NOECHO) $(ECHO) 'license:            unknown' >> META_new.yml
+	$(NOECHO) $(ECHO) 'distribution_type:  module' >> META_new.yml
+	$(NOECHO) $(ECHO) 'configure_requires:' >> META_new.yml
+	$(NOECHO) $(ECHO) '    ExtUtils::Depends:    0.2' >> META_new.yml
+	$(NOECHO) $(ECHO) '    ExtUtils::PkgConfig:  1' >> META_new.yml
+	$(NOECHO) $(ECHO) '    Prima:                1.38' >> META_new.yml
+	$(NOECHO) $(ECHO) 'build_requires:' >> META_new.yml
+	$(NOECHO) $(ECHO) '    ExtUtils::MakeMaker:  0' >> META_new.yml
+	$(NOECHO) $(ECHO) 'requires:' >> META_new.yml
+	$(NOECHO) $(ECHO) '    Cairo:  1.104' >> META_new.yml
+	$(NOECHO) $(ECHO) '    perl:   5.008' >> META_new.yml
+	$(NOECHO) $(ECHO) '    Prima:  1.38' >> META_new.yml
+	$(NOECHO) $(ECHO) 'no_index:' >> META_new.yml
+	$(NOECHO) $(ECHO) '    directory:' >> META_new.yml
+	$(NOECHO) $(ECHO) '        - t' >> META_new.yml
+	$(NOECHO) $(ECHO) '        - inc' >> META_new.yml
+	$(NOECHO) $(ECHO) 'generated_by:       ExtUtils::MakeMaker version 6.57_05' >> META_new.yml
+	$(NOECHO) $(ECHO) 'meta-spec:' >> META_new.yml
+	$(NOECHO) $(ECHO) '    url:      http://module-build.sourceforge.net/META-spec-v1.4.html' >> META_new.yml
+	$(NOECHO) $(ECHO) '    version:  1.4' >> META_new.yml
 	-$(NOECHO) $(MV) META_new.yml $(DISTVNAME)/META.yml
-	$(NOECHO) $(ECHO) Generating META.json
-	$(NOECHO) $(ECHO) {{ > META_new.json
-	$(NOECHO) $(ECHO) "   \"abstract\" : \"unknown\"," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"author\" : [" >> META_new.json
-	$(NOECHO) $(ECHO) "      \"Dmitry Karasik ^<dmitry^@karasik.eu.org^>\"" >> META_new.json
-	$(NOECHO) $(ECHO) "   ]," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"dynamic_config\" : 1," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"generated_by\" : \"ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.120921\"," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"license\" : [" >> META_new.json
-	$(NOECHO) $(ECHO) "      \"unknown\"" >> META_new.json
-	$(NOECHO) $(ECHO) "   ]," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"meta-spec\" : {{" >> META_new.json
-	$(NOECHO) $(ECHO) "      \"url\" : \"http://search.cpan.org/perldoc?CPAN::Meta::Spec\"," >> META_new.json
-	$(NOECHO) $(ECHO) "      \"version\" : \"2\"" >> META_new.json
-	$(NOECHO) $(ECHO) "   }}," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"name\" : \"Prima-Cairo\"," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"no_index\" : {{" >> META_new.json
-	$(NOECHO) $(ECHO) "      \"directory\" : [" >> META_new.json
-	$(NOECHO) $(ECHO) "         \"t\"," >> META_new.json
-	$(NOECHO) $(ECHO) "         \"inc\"" >> META_new.json
-	$(NOECHO) $(ECHO) "      ]" >> META_new.json
-	$(NOECHO) $(ECHO) "   }}," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"prereqs\" : {{" >> META_new.json
-	$(NOECHO) $(ECHO) "      \"build\" : {{" >> META_new.json
-	$(NOECHO) $(ECHO) "         \"requires\" : {{" >> META_new.json
-	$(NOECHO) $(ECHO) "            \"ExtUtils::MakeMaker\" : \"0\"" >> META_new.json
-	$(NOECHO) $(ECHO) "         }}" >> META_new.json
-	$(NOECHO) $(ECHO) "      }}," >> META_new.json
-	$(NOECHO) $(ECHO) "      \"configure\" : {{" >> META_new.json
-	$(NOECHO) $(ECHO) "         \"requires\" : {{" >> META_new.json
-	$(NOECHO) $(ECHO) "            \"ExtUtils::Depends\" : \"0.2\"," >> META_new.json
-	$(NOECHO) $(ECHO) "            \"ExtUtils::PkgConfig\" : \"1\"," >> META_new.json
-	$(NOECHO) $(ECHO) "            \"Prima\" : \"1.38\"" >> META_new.json
-	$(NOECHO) $(ECHO) "         }}" >> META_new.json
-	$(NOECHO) $(ECHO) "      }}," >> META_new.json
-	$(NOECHO) $(ECHO) "      \"runtime\" : {{" >> META_new.json
-	$(NOECHO) $(ECHO) "         \"requires\" : {{" >> META_new.json
-	$(NOECHO) $(ECHO) "            \"Cairo\" : \"1.104\"," >> META_new.json
-	$(NOECHO) $(ECHO) "            \"Prima\" : \"1.38\"," >> META_new.json
-	$(NOECHO) $(ECHO) "            \"perl\" : \"5.008\"" >> META_new.json
-	$(NOECHO) $(ECHO) "         }}" >> META_new.json
-	$(NOECHO) $(ECHO) "      }}" >> META_new.json
-	$(NOECHO) $(ECHO) "   }}," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"release_status\" : \"stable\"," >> META_new.json
-	$(NOECHO) $(ECHO) "   \"version\" : \"0.01\"" >> META_new.json
-	$(NOECHO) $(ECHO) }} >> META_new.json
-	-$(NOECHO) $(MV) META_new.json $(DISTVNAME)/META.json
 
 
 # --- MakeMaker signature section:
@@ -665,8 +632,8 @@ veryclean : realclean
 # --- MakeMaker dist_core section:
 
 dist : $(DIST_DEFAULT) $(FIRST_MAKEFILE)
-	$(NOECHO) $(ABSPERLRUN) -l -e "print 'Warning: Makefile possibly out of date with $(VERSION_FROM)'\
-    if -e '$(VERSION_FROM)' and -M '$(VERSION_FROM)' < -M '$(FIRST_MAKEFILE)';" --
+	$(NOECHO) $(ABSPERLRUN) -l -e 'print '\''Warning: Makefile possibly out of date with $(VERSION_FROM)'\''' \
+	  -e '    if -e '\''$(VERSION_FROM)'\'' and -M '\''$(VERSION_FROM)'\'' < -M '\''$(FIRST_MAKEFILE)'\'';' --
 
 tardist : $(DISTVNAME).tar$(SUFFIX)
 	$(NOECHO) $(NOOP)
@@ -728,19 +695,15 @@ ci :
 
 # --- MakeMaker distmeta section:
 distmeta : create_distdir metafile
-	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e "exit unless -e q{{META.yml}};\
-eval {{ maniadd({{q{{META.yml}} => q{{Module YAML meta-data (added by MakeMaker)}}}}) }}\
-    or print \"Could not add META.yml to MANIFEST: $$$${{'^@'}}\n\"" --
-	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e "exit unless -f q{{META.json}};\
-eval {{ maniadd({{q{{META.json}} => q{{Module JSON meta-data (added by MakeMaker)}}}}) }}\
-    or print \"Could not add META.json to MANIFEST: $$$${{'^@'}}\n\"" --
+	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e 'eval { maniadd({q{META.yml} => q{Module meta-data (added by MakeMaker)}}) } ' \
+	  -e '    or print "Could not add META.yml to MANIFEST: $${'\''@'\''}\n"' --
 
 
 
 # --- MakeMaker distsignature section:
 distsignature : create_distdir
-	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e "eval {{ maniadd({{q{{SIGNATURE}} => q{{Public-key signature (added by MakeMaker)}}}}) }} \
-    or print \"Could not add SIGNATURE to MANIFEST: $$$${{'^@'}}\n\"" --
+	$(NOECHO) cd $(DISTVNAME) && $(ABSPERLRUN) -MExtUtils::Manifest=maniadd -e 'eval { maniadd({q{SIGNATURE} => q{Public-key signature (added by MakeMaker)}}) } ' \
+	  -e '    or print "Could not add SIGNATURE to MANIFEST: $${'\''@'\''}\n"' --
 	$(NOECHO) cd $(DISTVNAME) && $(TOUCH) SIGNATURE
 	cd $(DISTVNAME) && cpansign -s
 
@@ -773,9 +736,7 @@ doc__install : doc_site_install
 	$(NOECHO) $(ECHO) INSTALLDIRS not defined, defaulting to INSTALLDIRS=site
 
 pure_perl_install :: all
-	$(NOECHO) $(MOD_INSTALL) \
-		read $(PERL_ARCHLIB)\auto\$(FULLEXT)\.packlist \
-		write $(DESTINSTALLARCHLIB)\auto\$(FULLEXT)\.packlist \
+	$(NOECHO) umask 022; $(MOD_INSTALL) \
 		$(INST_LIB) $(DESTINSTALLPRIVLIB) \
 		$(INST_ARCHLIB) $(DESTINSTALLARCHLIB) \
 		$(INST_BIN) $(DESTINSTALLBIN) \
@@ -783,13 +744,13 @@ pure_perl_install :: all
 		$(INST_MAN1DIR) $(DESTINSTALLMAN1DIR) \
 		$(INST_MAN3DIR) $(DESTINSTALLMAN3DIR)
 	$(NOECHO) $(WARN_IF_OLD_PACKLIST) \
-		$(SITEARCHEXP)\auto\$(FULLEXT)
+		$(SITEARCHEXP)/auto/$(FULLEXT)
 
 
 pure_site_install :: all
-	$(NOECHO) $(MOD_INSTALL) \
-		read $(SITEARCHEXP)\auto\$(FULLEXT)\.packlist \
-		write $(DESTINSTALLSITEARCH)\auto\$(FULLEXT)\.packlist \
+	$(NOECHO) umask 02; $(MOD_INSTALL) \
+		read $(SITEARCHEXP)/auto/$(FULLEXT)/.packlist \
+		write $(DESTINSTALLSITEARCH)/auto/$(FULLEXT)/.packlist \
 		$(INST_LIB) $(DESTINSTALLSITELIB) \
 		$(INST_ARCHLIB) $(DESTINSTALLSITEARCH) \
 		$(INST_BIN) $(DESTINSTALLSITEBIN) \
@@ -797,12 +758,10 @@ pure_site_install :: all
 		$(INST_MAN1DIR) $(DESTINSTALLSITEMAN1DIR) \
 		$(INST_MAN3DIR) $(DESTINSTALLSITEMAN3DIR)
 	$(NOECHO) $(WARN_IF_OLD_PACKLIST) \
-		$(PERL_ARCHLIB)\auto\$(FULLEXT)
+		$(PERL_ARCHLIB)/auto/$(FULLEXT)
 
 pure_vendor_install :: all
-	$(NOECHO) $(MOD_INSTALL) \
-		read $(VENDORARCHEXP)\auto\$(FULLEXT)\.packlist \
-		write $(DESTINSTALLVENDORARCH)\auto\$(FULLEXT)\.packlist \
+	$(NOECHO) umask 022; $(MOD_INSTALL) \
 		$(INST_LIB) $(DESTINSTALLVENDORLIB) \
 		$(INST_ARCHLIB) $(DESTINSTALLVENDORARCH) \
 		$(INST_BIN) $(DESTINSTALLVENDORBIN) \
@@ -811,50 +770,31 @@ pure_vendor_install :: all
 		$(INST_MAN3DIR) $(DESTINSTALLVENDORMAN3DIR)
 
 doc_perl_install :: all
-	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
-	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
-	-$(NOECHO) $(DOC_INSTALL) \
-		"Module" "$(NAME)" \
-		"installed into" "$(INSTALLPRIVLIB)" \
-		LINKTYPE "$(LINKTYPE)" \
-		VERSION "$(VERSION)" \
-		EXE_FILES "$(EXE_FILES)" \
-		>> $(DESTINSTALLARCHLIB)\perllocal.pod
 
 doc_site_install :: all
-	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
-	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
-	-$(NOECHO) $(DOC_INSTALL) \
+	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLSITEARCH)/perllocal.pod
+	-$(NOECHO) umask 02; $(MKPATH) $(DESTINSTALLSITEARCH)
+	-$(NOECHO) umask 02; $(DOC_INSTALL) \
 		"Module" "$(NAME)" \
 		"installed into" "$(INSTALLSITELIB)" \
 		LINKTYPE "$(LINKTYPE)" \
 		VERSION "$(VERSION)" \
 		EXE_FILES "$(EXE_FILES)" \
-		>> $(DESTINSTALLARCHLIB)\perllocal.pod
+		>> $(DESTINSTALLSITEARCH)/perllocal.pod
 
 doc_vendor_install :: all
-	$(NOECHO) $(ECHO) Appending installation info to $(DESTINSTALLARCHLIB)/perllocal.pod
-	-$(NOECHO) $(MKPATH) $(DESTINSTALLARCHLIB)
-	-$(NOECHO) $(DOC_INSTALL) \
-		"Module" "$(NAME)" \
-		"installed into" "$(INSTALLVENDORLIB)" \
-		LINKTYPE "$(LINKTYPE)" \
-		VERSION "$(VERSION)" \
-		EXE_FILES "$(EXE_FILES)" \
-		>> $(DESTINSTALLARCHLIB)\perllocal.pod
 
 
 uninstall :: uninstall_from_$(INSTALLDIRS)dirs
 	$(NOECHO) $(NOOP)
 
 uninstall_from_perldirs ::
-	$(NOECHO) $(UNINSTALL) $(PERL_ARCHLIB)\auto\$(FULLEXT)\.packlist
 
 uninstall_from_sitedirs ::
-	$(NOECHO) $(UNINSTALL) $(SITEARCHEXP)\auto\$(FULLEXT)\.packlist
+	$(NOECHO) $(UNINSTALL) $(SITEARCHEXP)/auto/$(FULLEXT)/.packlist
 
 uninstall_from_vendordirs ::
-	$(NOECHO) $(UNINSTALL) $(VENDORARCHEXP)\auto\$(FULLEXT)\.packlist
+
 
 
 # --- MakeMaker force section:
@@ -909,6 +849,8 @@ PERL_HDRS = \
 
 $(OBJECT) : $(PERL_HDRS)
 
+Cairo.c : $(XSUBPPDEPS)
+
 
 # --- MakeMaker makefile section:
 
@@ -933,7 +875,7 @@ $(FIRST_MAKEFILE) : Makefile.PL $(CONFIGDEP)
 
 # --- MakeMaker makeaperl section ---
 MAP_TARGET    = perl
-FULLPERL      = C:\usr\local\perl\sb32.516.3\perl\bin\perl.exe
+FULLPERL      = /usr/bin/perl
 
 $(MAP_TARGET) :: static $(MAKE_APERL_FILE)
 	$(MAKE) $(USEMAKEFILE) $(MAKE_APERL_FILE) $@
@@ -966,38 +908,39 @@ subdirs-test ::
 test_dynamic :: pure_all
 
 testdb_dynamic :: pure_all
-	$(FULLPERLRUN) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
+	PERL_DL_NONLAZY=1 $(FULLPERLRUN) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
 
 test_ : test_dynamic
 
 test_static :: pure_all $(MAP_TARGET)
 
 testdb_static :: pure_all $(MAP_TARGET)
-	./$(MAP_TARGET) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
+	PERL_DL_NONLAZY=1 ./$(MAP_TARGET) $(TESTDB_SW) "-I$(INST_LIB)" "-I$(INST_ARCHLIB)" $(TEST_FILE)
 
 
 
 # --- MakeMaker ppd section:
 # Creates a PPD (Perl Package Description) for a binary distribution.
 ppd :
-	$(NOECHO) $(ECHO) "<SOFTPKG NAME=\"$(DISTNAME)\" VERSION=\"$(VERSION)\">" > $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) "    <ABSTRACT></ABSTRACT>" >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) "    <AUTHOR>Dmitry Karasik &lt;dmitry@karasik.eu.org&gt;</AUTHOR>" >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) "    <IMPLEMENTATION>" >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) "        <PERLCORE VERSION=\"5,008,0,0\" />" >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) "        <REQUIRE NAME=\"Cairo::\" VERSION=\"1.104\" />" >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) "        <REQUIRE NAME=\"Prima::\" VERSION=\"1.38\" />" >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) "        <ARCHITECTURE NAME=\"MSWin32-x86-multi-thread-5.16\" />" >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) "        <CODEBASE HREF=\"\" />" >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) "    </IMPLEMENTATION>" >> $(DISTNAME).ppd
-	$(NOECHO) $(ECHO) ^</SOFTPKG^> >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '<SOFTPKG NAME="$(DISTNAME)" VERSION="0.01">' > $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    <ABSTRACT></ABSTRACT>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    <AUTHOR>Dmitry Karasik &lt;dmitry@karasik.eu.org&gt;</AUTHOR>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    <IMPLEMENTATION>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <PERLCORE VERSION="5,008,0,0" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Cairo::" VERSION="1.104" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <REQUIRE NAME="Prima::" VERSION="1.38" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <ARCHITECTURE NAME="x86_64-linux-gnu-thread-multi-5.14" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '        <CODEBASE HREF="" />' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '    </IMPLEMENTATION>' >> $(DISTNAME).ppd
+	$(NOECHO) $(ECHO) '</SOFTPKG>' >> $(DISTNAME).ppd
 
 
 # --- MakeMaker pm_to_blib section:
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
-	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e "pm_to_blib({{@ARGV}}, '$(INST_LIB)\auto', q[$(PM_FILTER)], '$(PERM_DIR)')" -- \
-	  lib/Prima/Cairo.pm blib\lib\Prima\Cairo.pm 
+	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
+	  a.pl $(INST_LIB)/Prima/a.pl \
+	  lib/Prima/Cairo.pm blib/lib/Prima/Cairo.pm 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
 

@@ -1,0 +1,7 @@
+MANIFEST
+Makefile.PL
+Cairo.xs
+x11.c
+lib/Prima/Cairo.pm
+include/prima_cairo.h
+examples/star_and_ring.pl

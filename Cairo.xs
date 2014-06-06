@@ -6,6 +6,7 @@
 #include <Image.h>
 #include <Application.h>
 #include <Printer.h>
+#include <cairo/cairo.h>
 #include "prima_cairo.h"
 
 PWidget_vmt CWidget;
@@ -30,9 +31,8 @@ BOOT:
 PROTOTYPES: ENABLE
 
 SV*
-surface_create(sv,sv)
+surface_create(sv)
 	SV *sv
-	SV *cairo_surface
 PREINIT:
 	Handle object;
 	Handle context;
@@ -44,7 +44,6 @@ CODE:
 	if ( !(object = gimme_the_mate(sv)))
 		croak("not a object");
 
-	parse( &request, attributes);
 	if ( kind_of( object, CApplication)) {
 		request = REQ_TARGET_APPLICATION;
 		need_paint_state = 1;
@@ -66,9 +65,10 @@ CODE:
 
 	if ( need_paint_state && !PObject(object)-> options. optInDraw )
 		croak("object not in paint state");
-	context = apc_cairo_surface_select(object, request);
+	context = apc_cairo_surface_create(object, request);
 
-	RETVAL = newSViv(context);
+	RETVAL = newSV(0);
+	sv_setref_pv(RETVAL, "Prima::Cairo::Surface", context);
 OUTPUT:
 	RETVAL
 
