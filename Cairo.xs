@@ -30,13 +30,13 @@ BOOT:
 PROTOTYPES: ENABLE
 
 SV*
-surface_create(sv,attributes)
+surface_create(sv,sv)
 	SV *sv
-	HV *attributes
+	SV *cairo_surface
 PREINIT:
 	Handle object;
 	Handle context;
-	GLRequest request;
+	int request;
 	Bool need_paint_state = 0;
 CODE:
 	RETVAL = 0;
@@ -46,19 +46,19 @@ CODE:
 
 	parse( &request, attributes);
 	if ( kind_of( object, CApplication)) {
-		request. target = GLREQ_TARGET_APPLICATION;
+		request = REQ_TARGET_APPLICATION;
 		need_paint_state = 1;
 	}
 	else if ( kind_of( object, CWidget))
-		request. target = GLREQ_TARGET_WINDOW;
+		request = REQ_TARGET_WINDOW;
 	else if ( kind_of( object, CDeviceBitmap)) 
-		request. target = GLREQ_TARGET_BITMAP;
+		request = REQ_TARGET_BITMAP;
 	else if ( kind_of( object, CImage)) {
-		request. target = GLREQ_TARGET_IMAGE;
+		request = REQ_TARGET_IMAGE;
 		need_paint_state = 1;
 	}
 	else if ( kind_of( object, CPrinter)) {
-		request. target = GLREQ_TARGET_PRINTER;
+		request = REQ_TARGET_PRINTER;
 		need_paint_state = 1;
 	}
 	else
@@ -66,57 +66,9 @@ CODE:
 
 	if ( need_paint_state && !PObject(object)-> options. optInDraw )
 		croak("object not in paint state");
-	context = gl_context_create(object, &request);
+	context = apc_cairo_surface_select(object, request);
 
 	RETVAL = newSViv(context);
-OUTPUT:
-	RETVAL
-
-void
-context_destroy(context)
-	void *context
-CODE:
-	if ( context) gl_context_destroy((Handle) context);
-
-
-int
-context_make_current(context)
-	void *context
-CODE:
-	RETVAL = gl_context_make_current((Handle) context);
-OUTPUT:
-	RETVAL
-
-int
-context_push()
-CODE:
-	RETVAL = gl_context_push();
-OUTPUT:
-	RETVAL
-
-int
-context_pop()
-CODE:
-	RETVAL = gl_context_pop();
-OUTPUT:
-	RETVAL
-
-int
-flush(context)
-	void *context
-CODE:
-	RETVAL = context ? gl_flush((Handle) context) : 0;
-OUTPUT:
-	RETVAL
-
-SV *
-last_error()
-PREINIT:
-	char buf[1024], *ret;
-CODE:
-
-	ret = gl_error_string(buf, 1024);
-	RETVAL = ret ? newSVpv(ret, 0) : &PL_sv_undef;
 OUTPUT:
 	RETVAL
 
