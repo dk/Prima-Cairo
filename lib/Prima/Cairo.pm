@@ -35,3 +35,68 @@ sub cairo_context
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Prima::Cairo - Prima extension for Cairo drawing
+
+=head1 DESCRIPTION
+
+The module allows for programming Cairo library together with Prima widgets.
+
+=head1 SYNOPSIS
+
+
+	use strict;
+	use warnings;
+	use Cairo;
+	use Prima qw(Application);
+	use Prima::Cairo;
+	
+	my $w = Prima::MainWindow->new( onPaint => sub {
+		my ( $self, $canvas ) = @_;
+		$canvas->clear;
+
+	        my $cr = $canvas->cairo_context;
+	
+	        $cr->rectangle (10, 10, 40, 40);
+	        $cr->set_source_rgb (0, 0, 0);
+	        $cr->fill;
+	
+	        $cr->rectangle (50, 50, 40, 40);
+	        $cr->set_source_rgb (1, 1, 1);
+	        $cr->fill;
+	
+	        $cr->show_page;
+	});
+	run Prima;
+
+=head1 Prima::Drawable API
+
+=over
+
+=item cairo_context
+
+Returns the Cairo context bound to the Prima drawable - widget, bitmap etc or an undef.
+
+=back
+
+=head1 AUTHOR
+
+Dmitry Karasik, E<lt>dmitry@karasik.eu.orgE<gt>.
+
+=head1 SEE ALSO
+
+L<Prima>, L<Cairo>
+
+   git clone git@github.com:dk/Prima-Cairo.git
+
+=head1 LICENSE
+
+This software is distributed under the BSD License.
+
+=cut

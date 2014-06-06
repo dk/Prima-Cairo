@@ -8,7 +8,7 @@ extern "C" {
 #define REQ_TARGET_IMAGE       3
 #define REQ_TARGET_PRINTER     4
 
-cairo_surface_t*
+void*
 apc_cairo_surface_create( Handle widget, int request);
 
 #ifdef __cplusplus

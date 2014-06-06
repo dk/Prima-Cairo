@@ -5,3 +5,5 @@ x11.c
 lib/Prima/Cairo.pm
 include/prima_cairo.h
 examples/star_and_ring.pl
+t/01_load.t
+t/98_pod.t

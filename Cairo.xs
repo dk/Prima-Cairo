@@ -6,7 +6,6 @@
 #include <Image.h>
 #include <Application.h>
 #include <Printer.h>
-#include <cairo/cairo.h>
 #include "prima_cairo.h"
 
 PWidget_vmt CWidget;
@@ -35,7 +34,7 @@ surface_create(sv)
 	SV *sv
 PREINIT:
 	Handle object;
-	Handle context;
+	void* context;
 	int request;
 	Bool need_paint_state = 0;
 CODE:
