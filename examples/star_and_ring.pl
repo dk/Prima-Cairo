@@ -89,7 +89,7 @@ my $w = Prima::MainWindow->new(
 		my ( $self, $canvas ) = @_;
 		$canvas->clear;
 		my @size = $self->size;
-        	my $cr = $canvas->cairo_context;
+       	my $cr = $canvas->cairo_context( transform => 0 );
   		my $matrix = Cairo::Matrix->init_identity;
 		$cr->scale($size[0]/600,$size[1]/600);
 		$cr->transform ($matrix);

@@ -26,9 +26,19 @@ package
 
 sub cairo_context
 {
-	my $surface = Prima::Cairo::surface_create(shift);
+	my ( $canvas, %options) = @_;
+	my $surface = Prima::Cairo::surface_create($canvas);
 	if ( $surface && $surface->status eq 'success') {
-        	return Cairo::Context->create ($surface);
+		my $context = Cairo::Context->create ($surface);
+		if (( $options{transform} // 'prima' ) eq 'prima' ) {
+			my $matrix = Cairo::Matrix->init(
+				1,	0, 
+				0, -1, 
+				0, $canvas->height
+			);
+			$context->transform($matrix);
+		}
+		return $context;
 	} else {
 		return undef;
 	}
@@ -50,38 +60,50 @@ The module allows for programming Cairo library together with Prima widgets.
 
 =head1 SYNOPSIS
 
+    use strict;
+    use warnings;
+    use Cairo;
+    use Prima qw(Application);
+    use Prima::Cairo;
+    
+    my $w = Prima::MainWindow->new( onPaint => sub {
+        my ( $self, $canvas ) = @_;
+        $canvas->clear;
 
-	use strict;
-	use warnings;
-	use Cairo;
-	use Prima qw(Application);
-	use Prima::Cairo;
-	
-	my $w = Prima::MainWindow->new( onPaint => sub {
-		my ( $self, $canvas ) = @_;
-		$canvas->clear;
-
-	        my $cr = $canvas->cairo_context;
-	
-	        $cr->rectangle (10, 10, 40, 40);
-	        $cr->set_source_rgb (0, 0, 0);
-	        $cr->fill;
-	
-	        $cr->rectangle (50, 50, 40, 40);
-	        $cr->set_source_rgb (1, 1, 1);
-	        $cr->fill;
-	
-	        $cr->show_page;
-	});
-	run Prima;
+            my $cr = $canvas->cairo_context;
+    
+            $cr->rectangle (10, 10, 40, 40);
+            $cr->set_source_rgb (0, 0, 0);
+            $cr->fill;
+    
+            $cr->rectangle (50, 50, 40, 40);
+            $cr->set_source_rgb (1, 1, 1);
+            $cr->fill;
+    
+            $cr->show_page;
+    });
+    run Prima;
 
 =head1 Prima::Drawable API
 
 =over
 
-=item cairo_context
+=head2 cairo_context %options
 
 Returns the Cairo context bound to the Prima drawable - widget, bitmap etc or an undef.
+
+Options:
+
+=over
+
+=item transform 'prima' || 'native'
+
+Prima coordinate system is such that lower left pixel is (0,0), while
+cairo system is that (0,0) is upper left pixel. By default C<cairo_context>
+returns a context adapted for Prima, but if you want native cairo coordinate
+system call it like this:
+
+   $canvas->cairo_context( transform => 0 );
 
 =back
 
