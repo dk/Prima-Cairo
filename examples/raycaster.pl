@@ -205,7 +205,10 @@ sub draw_weapon
     my $left = $width * 0.66 + $bobx;
     my $top  = $height * 0.6 + $boby;
     my $cr = $canvas->cairo_context( transform => 0);
-    $cr->set_source_surface($weapon, $left, $top);
+    my $m = Cairo::Matrix->init_identity;
+    $m->scale($scale, $scale);
+    $cr->transform($m); 
+    $cr->set_source_surface($weapon, $left/$scale, $top/$scale);
     $cr->paint;
 }
 
