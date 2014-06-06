@@ -34,7 +34,7 @@ WriteMakefile(
 	AUTHOR		   => 'Dmitry Karasik <dmitry@karasik.eu.org>',
 	LIBS		   => "$Prima::Config::Config{libs} $cairo_cfg{libs}",
 	DEFINE		   => "$Prima::Config::Config{define} $cairo_cfg{cflags}",
-	INC		   => "$Prima::Config::Config{inc} -Iinclude",
+	INC		       => "$Prima::Config::Config{inc} -Iinclude",
 	OBJECT		   => "@obj",
 	META_MERGE	  => {
 		resources => {
