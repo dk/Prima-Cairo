@@ -4,10 +4,7 @@
 
 use strict;
 use warnings;
-use Prima qw(Application);
-use Cairo;
-use Prima::Cairo;
-
+use Prima qw(Application Cairo);
 
 sub ring_path {
   my ($cr,$x,$y) = @_;
