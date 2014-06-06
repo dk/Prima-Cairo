@@ -7,8 +7,8 @@
 #define Drawable        XDrawable
 #define Font            XFont
 #define Window          XWindow
-#include <cairo/cairo.h>
-#include <cairo/cairo-xlib.h>
+#include <cairo.h>
+#include <cairo-xlib.h>
 #include "prima_cairo.h"
 
 #ifdef __cplusplus
