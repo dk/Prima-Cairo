@@ -10,7 +10,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 sub dl_load_flags { 0x01 };
 
-$VERSION = '0.01';
+$VERSION = '1.00';
 @EXPORT = qw();
 @EXPORT_OK = qw();
 %EXPORT_TAGS = ();
@@ -167,6 +167,27 @@ system call it like this:
    $canvas->cairo_context( transform => 0 );
 
 =back
+
+=head1 Installation on Strawberry win32
+
+Before installing the module, you need to install L<Cairo> perl wrapper.
+That requires libcairo binaries, includes, and pkg-config.
+
+In case you don't have cairo binaries and include files, grab them here:
+
+L<http://karasik.eu.org/misc/cairo/cairo-win32.zip> .
+
+Hack lib/pkgconfig/cairo.pc and point PKG_CONFIG_PATH to the directory where it
+is located.
+
+Strawberry 5.20 is shipped with a broken pkg-config (
+L<https://rt.cpan.org/Ticket/Display.html?id=96315>,
+L<https://rt.cpan.org/Ticket/Display.html?id=96317>
+), if you need a working one grab it here:
+
+L<http://karasik.eu.org/misc/cairo/pkgconfig.zip>
+
+This setup is needed both for L<Cairo> and L<Prima-Cairo>.
 
 =head1 AUTHOR
 
