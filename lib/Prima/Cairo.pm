@@ -149,8 +149,6 @@ The module allows for programming Cairo library together with Prima widgets.
 
 =head1 Prima::Drawable API
 
-=over
-
 =head2 cairo_context %options
 
 Returns the Cairo context bound to the Prima drawable - widget, bitmap etc or an undef.
