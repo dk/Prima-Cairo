@@ -50,7 +50,7 @@ CODE:
 	else if ( kind_of( object, CWidget))
 		request = REQ_TARGET_WINDOW;
 	else if ( kind_of( object, CDeviceBitmap)) 
-		request = REQ_TARGET_BITMAP;
+		request = ((PDeviceBitmap)object)->monochrome ? REQ_TARGET_BITMAP : REQ_TARGET_PIXMAP;
 	else if ( kind_of( object, CImage)) {
 		request = REQ_TARGET_IMAGE;
 		need_paint_state = 1;

@@ -5,8 +5,6 @@
 #include <unix/guts.h>
 
 #define Drawable        XDrawable
-#define Font            XFont
-#define Window          XWindow
 #include <cairo.h>
 #include <cairo-xlib.h>
 #include "prima_cairo.h"
@@ -15,8 +13,7 @@
 extern "C" {
 #endif
 
-#define var (( PComponent) widget)
-#define ctx (( Context*) context)
+#define var (( PDrawable) widget)
 #define sys (( PDrawableSysData) var-> sysData)
 
 UnixGuts * pguts;
@@ -24,19 +21,25 @@ UnixGuts * pguts;
 void*
 apc_cairo_surface_create( Handle widget, int request)
 {
-	Point p;
+	cairo_surface_t * result = NULL;
 	if ( pguts == NULL )
 		pguts = (UnixGuts*) apc_system_action("unix_guts");
 
 	XCHECKPOINT;
 
 	switch ( request) {
-	case REQ_TARGET_WINDOW:
-		p = apc_widget_get_size( widget );
-		return cairo_xlib_surface_create(DISP, sys->gdrawable, VISUAL, p.x, p.y);
+	case REQ_TARGET_PRINTER:
+		break;
+	case REQ_TARGET_BITMAP:
+		result = cairo_xlib_surface_create_for_bitmap(DISP, sys->gdrawable, ScreenOfDisplay(DISP,SCREEN), var->w, var->h);
+		break;
+	default:
+		result = cairo_xlib_surface_create(DISP, sys->gdrawable, VISUAL, var->w, var->h);
 	}
+	
+	XCHECKPOINT;
 
-	return 0;
+	return (void*) result;
 }
 
 

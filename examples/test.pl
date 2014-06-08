@@ -26,7 +26,8 @@ $b->image->save('dbm-color.bmp');
 
 print "DeviceBitmap(monochrome => 1)\n";
 $b = Prima::DeviceBitmap->create(width => 250, height => 250, monochrome => 1);
-$b->clear;
+$b->fillPattern(fp::CloseDot);
+$b->bar(0,0,$b->size);
 draw($b);
 $b->image->save('dbm-mono.bmp');
 

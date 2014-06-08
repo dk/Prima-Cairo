@@ -12,7 +12,6 @@ extern "C" {
 #endif
 
 #define var (( PComponent) widget)
-#define img (( PDrawable) widget)
 #define sys (( PDrawableData) var-> sysData)
 
 void*
