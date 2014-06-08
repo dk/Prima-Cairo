@@ -17,7 +17,8 @@ $VERSION = '0.01';
 
 bootstrap Prima::Cairo $VERSION;
 
-package Prima::Cairo::Surface;
+package 
+	Prima::Cairo::Surface;
 use vars qw(@ISA);
 our @ISA = qw(Cairo::Surface);
 
@@ -27,9 +28,9 @@ package
 sub cairo_context
 {
 	my ( $canvas, %options) = @_;
-	my $surface = Prima::Cairo::surface_create($canvas);
+	my $surface = $options{surface} // Prima::Cairo::surface_create($canvas);
 	if ( $surface && $surface->status eq 'success') {
-		my $context = Cairo::Context->create ($surface);
+		my $context = $options{context} // Cairo::Context->create ($surface);
 		if (( $options{transform} // 'prima' ) eq 'prima' ) {
 			my $matrix = Cairo::Matrix->init(
 				1,	0, 
@@ -44,6 +45,68 @@ sub cairo_context
 	}
 }
 
+package 
+	Prima::PS::Cairo::Context;
+
+sub create
+{
+	my ( $class, $surface, $canvas ) = @_;
+	return bless {
+		context => Cairo::Context->create( $surface ),
+		canvas  => $canvas,
+	}, $class;
+}
+
+sub show_page
+{
+	my $self = shift;
+
+	my $recorder = $self->{context}->get_target;
+	my ($x,$y,$w,$h) = $recorder->ink_extents;
+	return unless $w > 0 && $h > 0;
+
+	my $image = Prima::Image->new(
+		width    => $w,
+		height   => $h,
+		type     => 24,
+	);
+	$image->begin_paint;
+	$image->clear;
+	my $cr = $image->cairo_context;
+	$cr->set_source_surface( $recorder, -$x, -$y );
+	$cr->paint;
+	$cr->show_page;
+
+	$image->end_paint;
+	$self->{canvas}->put_image($x,$self->{canvas}->height - $h - $y,$image);
+}
+
+sub AUTOLOAD {
+	my $self = shift;
+	my $stash_name = our $AUTOLOAD;
+	$stash_name =~ s/.*:://;
+	return $self->{context}->$stash_name(@_);
+}
+
+sub DESTROY {}
+
+package
+	Prima::PS::Drawable;
+
+sub cairo_context
+{
+	my ( $canvas, %options) = @_;
+	my $surface = Cairo::RecordingSurface->create( 'color-alpha', {
+		x      => 0,
+		y      => 0,
+		width  => $canvas->width,
+		height => $canvas->height,
+	});
+	return Prima::Drawable::cairo_context( $canvas, %options, 
+		surface => $surface,
+		context => Prima::PS::Cairo::Context->create($surface, $canvas),
+	);		
+}
 1;
 
 __END__

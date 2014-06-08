@@ -18,10 +18,9 @@ extern "C" {
 void*
 apc_cairo_surface_create( Handle widget, int request)
 {
-	switch ( request ) {
-	case REQ_TARGET_WINDOW:
+	if ( request == REQ_TARGET_PRINTER ) 
+        	return cairo_win32_printing_surface_create(sys-> ps);
         return cairo_win32_surface_create(sys-> ps);
-	}
 }
 
 
