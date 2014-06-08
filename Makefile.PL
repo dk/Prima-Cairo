@@ -21,6 +21,7 @@ WriteMakefile(
 	NAME		   => 'Prima::Cairo',
 	VERSION_FROM	   => 'lib/Prima/Cairo.pm',
 	MIN_PERL_VERSION   => '5.008',
+	LICENSE            => 'BSD',
 	PREREQ_PM	   => {
 		'Prima'               => 1.38,
 		'Cairo'               => 1.104,
