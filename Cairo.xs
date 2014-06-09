@@ -7,6 +7,7 @@
 #include <Application.h>
 #include <Printer.h>
 #include "prima_cairo.h"
+#include <cairo.h>
 
 PWidget_vmt CWidget;
 PDeviceBitmap_vmt CDeviceBitmap;
@@ -28,6 +29,34 @@ BOOT:
 }
 
 PROTOTYPES: ENABLE
+
+void
+copy_image_data(im,s,direction)
+	SV * im;
+	UV s;
+	int direction;
+PREINIT:
+	Handle image;
+	int i, w, h, dest_stride, src_stride;
+	Byte *dest_buf, *src_buf;
+	cairo_surface_t * surface;
+CODE:
+	surface = INT2PTR(cairo_surface_t*,s);
+	dest_stride = cairo_image_surface_get_stride(surface);
+	dest_buf    = cairo_image_surface_get_data(surface);
+	if ( !(image = gimme_the_mate(im)) || !kind_of( image, CImage) || PImage(image)->type != imbpp24)
+		croak("bad object");
+	w   	   = PImage(image)->w;
+	h   	   = PImage(image)->h;
+	src_stride = PImage(image)->lineSize;
+	src_buf    = PImage(image)->data + src_stride * ( h - 1);
+	for ( i = 0; i < h; i++, src_buf -= src_stride, dest_buf += dest_stride ) {
+		if (direction)
+			bc_rgb_rgbi(src_buf, dest_buf, w);
+		else
+			bc_rgbi_rgb(dest_buf, src_buf, w);
+	}
+OUTPUT:	
 
 SV*
 surface_create(sv)

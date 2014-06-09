@@ -10,10 +10,49 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 sub dl_load_flags { 0x01 };
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 @EXPORT = qw();
 @EXPORT_OK = qw();
 %EXPORT_TAGS = ();
+
+sub Prima::Image::to_cairo_surface
+{
+	my $image = shift;
+
+	unless ( $image->type == im::bpp24 ) {
+		$image = $image->dup;
+		$image->type(im::bpp24);
+	}
+
+	my $surface = Cairo::ImageSurface->create('rgb24', $image->size);
+	unless ($surface) {
+		$surface = Cairo::ImageSurface->create('rgb24', 1, 1);
+		$surface->status('not enough memory');
+		return $surface;
+	}
+	return $surface unless $surface->status eq 'success';
+	
+	my $stride = Cairo::Format::stride_for_width('rgb24', $image->width);
+	if ( $stride != $image->width * 4) {
+		$surface->status('assertion about stride size failed');
+		return $surface;
+	}
+	
+	Prima::Cairo::copy_image_data($image, $$surface, 1);
+	return $surface;
+}
+
+sub Cairo::ImageSurface::to_prima_image
+{
+	my ( $surface ) = @_;
+	my $image = Prima::Image->new(
+		width  => $surface->get_width,
+		height => $surface->get_height,
+		type   => im::bpp24,
+	);
+	Prima::Cairo::copy_image_data($image, $$surface, 0);
+	return $image;
+}
 
 bootstrap Prima::Cairo $VERSION;
 
@@ -107,6 +146,7 @@ sub cairo_context
 		context => Prima::PS::Cairo::Context->create($surface, $canvas),
 	);		
 }
+
 1;
 
 __END__
@@ -166,6 +206,14 @@ system call it like this:
 
    $canvas->cairo_context( transform => 0 );
 
+=item Cairo::ImageSurface::to_prima_image
+
+Returns a im::bpp24 Prima::Image object with pixels copies from the image surface
+
+=item Prima::Image::to_cairo_surface
+
+Returns a rgb24 Cairo::ImageSurface object with pixels copied from the image
+
 =back
 
 =head1 Installation on Strawberry win32
@@ -178,14 +226,12 @@ In case you don't have cairo binaries and include files, grab them here:
 L<http://karasik.eu.org/misc/cairo/cairo-win32.zip> .
 
 Hack lib/pkgconfig/cairo.pc and point PKG_CONFIG_PATH to the directory where it
-is located.
+is located or copy it to where your system pkgconfig files are.
 
 Strawberry 5.20 is shipped with a broken pkg-config (
 L<https://rt.cpan.org/Ticket/Display.html?id=96315>,
 L<https://rt.cpan.org/Ticket/Display.html?id=96317>
-), if you need a working one grab it here:
-
-L<http://karasik.eu.org/misc/cairo/pkgconfig.zip>
+), you'll need to install the latest ExtUtils::PkgConfig from CPAN.
 
 This setup is needed both for L<Cairo> and L<Prima-Cairo>.
 
