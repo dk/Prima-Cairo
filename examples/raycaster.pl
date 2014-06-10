@@ -329,8 +329,8 @@ sub draw_column
     my @lines;
     my $wall_width  = $wall->get_width;
     my $wall_height = $wall->get_height;
-    my @raindrops;
     for ( my $s = @$rays - RAYSIZE; $s >= 0; $s -= RAYSIZE) {
+    	my @raindrops;
         my $step         = $s/RAYSIZE;
         my $rain_drops   = $step * (rand() ** 3);
         my $cos_distance = $cos_angle * $rays->[$s + DISTANCE];
@@ -368,9 +368,9 @@ sub draw_column
             my $top = rand() * $rain_top ;
             push @raindrops, $left, $top, 1, $rain_height;
         }
+    	draw_raindrops($cr, \@raindrops);
     }
 
-    draw_raindrops($cr, \@raindrops);
 }
 
 sub draw_weapon 
