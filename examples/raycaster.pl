@@ -6,21 +6,13 @@ use strict;
 use warnings;
 use POSIX qw(ceil floor);
 use Time::HiRes qw(time);
-use ExtUtils::PkgConfig;
 use Prima qw(Application MsgBox Cairo);
 
 my ($use_inline_c, $libs);
 BEGIN { 
         # find cairo lib for direct linking
         eval "require Inline::C;";
-        unless ( $@ ) {
-                my %cairo_cfg;
-		eval { %cairo_cfg = ExtUtils::PkgConfig->find("cairo >= 1.0.0") };
-		unless ( $@) {
-                    $libs = $cairo_cfg{libs};
-                    $use_inline_c = 1;
-		}
-        }
+        $use_inline_c = 1 unless $@;
 };
 
 my $pi          = atan2(1,0)*2;
@@ -234,24 +226,9 @@ cast_c(float x, float y, float angle, float range, int mapsize)
         return newSVpv((const char *) rays, sizeof(float) * RAYSIZE * size);
 }
 
-extern void cairo_rectangle(void * cr, double x, double y, double width, double height);
-extern void cairo_fill(void * cr);
-
-void
-draw_raindrops_c( UV cr, int count, SV * raindrops)
-{
-        int i;
-        void * ptr = INT2PTR(void*,cr);
-        double * points = (double*) SvPV_nolen(raindrops);
-        for ( i = 0; i < count; i++, points += 4 ) {
-                cairo_rectangle(ptr, points[0], points[1], points[2], points[3]);
-                cairo_fill(ptr);
-        }
-}
-
 CASTER
         print "Found Inline::C, compiling optimizing version...\n";
-        eval "use Inline C => '$caster', LIBS => '$libs'";
+        eval "use Inline C => '$caster'";
         die $@ if $@;
 }
 
@@ -260,19 +237,6 @@ sub cast {
       [unpack('f*', cast_c(@_))] :
       cast_perl(@_)
    ;
-}
-
-sub draw_raindrops
-{
-    my ( $cr, $raindrops) = @_;
-    if ($use_inline_c) {
-        draw_raindrops_c($$cr,scalar(@$raindrops)/4,pack('d*',@$raindrops));
-    } else {
-        for ( my $i = 0; $i < @$raindrops; $i += 4 ) {
-            $cr->rectangle(@$raindrops[$i .. $i + 3]);
-            $cr->fill;
-        } 
-    }
 }
 
 sub update
@@ -330,7 +294,6 @@ sub draw_column
     my $wall_width  = $wall->get_width;
     my $wall_height = $wall->get_height;
     for ( my $s = @$rays - RAYSIZE; $s >= 0; $s -= RAYSIZE) {
-    	my @raindrops;
         my $step         = $s/RAYSIZE;
         my $rain_drops   = $step * (rand() ** 3);
         my $cos_distance = $cos_angle * $rays->[$s + DISTANCE];
@@ -366,9 +329,9 @@ sub draw_column
         $cr->set_source_rgba(1,1,1,0.15);
         while ( $draw_rain && --$rain_drops > 0 ) {
             my $top = rand() * $rain_top ;
-            push @raindrops, $left, $top, 1, $rain_height;
+            $cr->rectangle($left, $top, 1, $rain_height);
         }
-    	draw_raindrops($cr, \@raindrops);
+        $cr->fill;
     }
 
 }
