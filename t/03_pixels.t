@@ -7,7 +7,9 @@ use Test::More;
 use Prima::noX11;
 use Prima qw(Cairo);
 
-plan tests => 13;
+plan tests => 14;
+
+############# rgb24 
 
 my $original = Prima::Image->create(
 	width    => 2,
@@ -24,6 +26,8 @@ ok( $surface->get_format eq 'rgb24', 'type is rgb24');
 my $image = $surface->to_prima_image;
 ok( $image && $image->data eq $original->data, "prima bpp24 image ok");
 
+############# a8
+
 $original = Prima::Image->create(
 	width    => 4,
 	height   => 2,
@@ -39,11 +43,13 @@ ok( $surface->get_format eq 'a8', 'type is a8');
 $image = $surface->to_prima_image;
 ok( $image && $image->data eq $original->data, "prima imByte image ok");
 
+############# a1
+
 $original = Prima::Image->create(
 	width    => 32,
 	height   => 2,
 	type     => im::BW,
-	data     => "\x10\x20\x30\x40\x50\x60\x70\x80",
+	data     => "\x19\x2A\x3B\x4C\x5D\x6E\x7F\x80",
 	lineSize => 4,
 );
 
@@ -53,6 +59,17 @@ ok( $surface->get_format eq 'a1', 'type is a1');
 
 $image = $surface->to_prima_image;
 ok( $image && $image->data eq $original->data, "prima imBW image ok");
+
+my $s1 = Cairo::ImageSurface->create('rgb24', 32, 2);
+my $c1 = Cairo::Context->create($s1);
+$c1->set_source_rgb(1,1,1);
+$c1->mask_surface($surface,0,0);
+$c1->fill;
+my $b1 = $s1->to_prima_image;
+$b1->set( conversion => ict::None, type => im::BW );
+ok( $b1->data eq $original->data, "a1 bit order");
+
+############# argb32 / icon
 
 $original = Prima::Icon->create(
 	width    => 2,

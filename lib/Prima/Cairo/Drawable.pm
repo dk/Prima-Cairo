@@ -111,13 +111,7 @@ sub alpha
 	$alpha = 0 if $alpha < 0;
 	$alpha = 1 if $alpha > 1;
 	$self->{alpha} = $alpha;
-	
-	my $color = $self->color;
-	$self->set_source_rgba(
-		int((($color & 0xff0000) >> 16) * 100 / 256 + 0.5) / 100, 
-		int((($color & 0xff00) >> 8) * 100 / 256 + 0.5) / 100, 
-		int(($color & 0xff)*100/256 + 0.5) / 100);
-		$alpha );
+	$self->{changed}->{fill} = 1 if $self->{can_draw};
 }
 
 sub useDeviceFonts
@@ -134,6 +128,7 @@ sub _begin_doc
 	my $self = shift;
 	$self->{translate} = [0,0];
 	$self->{pages} = 0;
+	$self->{changed} = {};
 }
 
 sub begin_paint
@@ -144,7 +139,16 @@ sub begin_paint
 	$self->save_state;
 	$self->_begin_doc;
 	$self->surface->set_fallback_resolution($self->resolution);
-	return $self->SUPER::begin_paint;
+	my $ok = $self->SUPER::begin_paint;
+	return $ok unless $ok;
+	$self->{can_draw}  = 1;
+	$self->{current} = {}
+	$self->$_( $self->{save_state}->{$_} ) for qw( 
+		color backColor fillPattern lineEnd linePattern lineWidth
+		rop rop2 textOpaque textOutBaseline font lineJoin fillWinding
+		alpha
+	);		
+	return $ok;
 }
 
 sub begin_paint_info
@@ -169,6 +173,7 @@ sub end_paint_info
 	return unless $self->get_paint_state == ps::Information;
 	$self->surface( delete $self->{save_state}->{surface} );
 	$self->restore_state;
+	delete $self->{changed};
 	return $self->SUPER::end_paint_info;
 }
 
@@ -176,6 +181,9 @@ sub end_paint
 {
 	my $self = shift;
 	return unless $self->get_paint_state == ps::Enabled;
+	delete $self->{can_draw};
+	delete $self->{changed};
+	delete $self->{current};
 	$self->restore_state;
 	return $self->SUPER::end_paint_info;
 }
@@ -252,28 +260,68 @@ sub line
 	$cr->stroke;
 }
 
-sub color
+eval <<PROP for qw(color backColor fillPattern);
+sub $_
 {
-	return $_[0]-> SUPER::color unless $#_;
-	$_[0]-> SUPER::color( $_[1]);
-	my ($self, $color) = @_;
-	return unless $self-> get_paint_state == ps::Disabled;
-	$self->set_source_rgba(
-		int((($color & 0xff0000) >> 16) * 100 / 256 + 0.5) / 100, 
-		int((($color & 0xff00) >> 8) * 100 / 256 + 0.5) / 100, 
-		int(($color & 0xff)*100/256 + 0.5) / 100);
-		$self->alpha );
+	return \$_[0]-> SUPER::$_ unless \$#_;
+	\$_[0]-> SUPER::$_(\$_[1]);
+	return unless \$_[0]->{can_draw};
+	\$_[0]->{changed}->{fill} = 1;
 }
+PROP
 
-sub backColor
+eval <<RASTER for qw(rop rop2);
+sub $_
 {
-	return $_[0]-> SUPER::backColor unless $#_;
-	$_[0]-> SUPER::backColor( $_[1]);
-	my ($self, $color) = @_;
-	return unless $self-> get_paint_state == ps::Disabled;
-	my $b = ($color & 0xff);
-	my $r = ($color & 0xff00) >> 8;
-	my $g = ($color & 0xff0000) >> 16;
+	return \$_[0]-> SUPER::$_ unless \$#_;
+	my (\$self,\$rop) = \@_;
+	\$rop = rop::Copy if \$rop != rop::Whiteness && \$rop != rop::Blackness && \$rop != rop::NoOper;
+	my \$old = \$self->SUPER::$_;
+	return if \$old == \$rop;
+	\$self-> SUPER::$_(\$rop);
+	return unless \$self->{can_draw};
+	\$self->{changed}->{fill} = 1;
 }
+RASTER
+
+sub _fill
+{
+	my $self = shift;
+	return unless $self->{can_draw};
+
+	if ( $self->{changed}->{fill}) {
+		my ($fc, $bc) = ($self->color, $self->backColor);
+		my ( $rop, $rop2 ) = ( $self->rop, $self->rop2 );
+		$fc = 0x000000 if $rop  == rop::Blackness;
+		$fc = 0xFFFFFF if $rop  == rop::Whiteness;
+		$bc = 0x000000 if $rop2 == rop::Blackness;
+		$bc = 0xFFFFFF if $rop2 == rop::Whiteness;
+
+		my @fp  = @{$self-> SUPER::fillPattern};
+		my $solid_back = ! grep { $_ != 0 } @fp;
+		my $solid_fore = ! grep { $_ != 0xff } @fp;
+		if (
+			($solid_fore && $rop  == rop::NoOper) ||
+			($solid_back && $rop2 == rop::NoOper) ||
+			($rop == rop::NoOper && $rop2 == rop::NoOper)
+		) {
+			$self->{current}->{can_paint} = 0;
+			goto EXIT_FILL;
+		}
+
+		if ( $solid_fore || $solid_back ) {
+			my $color = $solid_fore ? $fc : $bc;
+			$self->set_source_rgba(
+				int((($color & 0xff0000) >> 16) * 100 / 256 + 0.5) / 100, 
+				int((($color & 0xff00) >> 8) * 100 / 256 + 0.5) / 100, 
+				int(($color & 0xff)*100/256 + 0.5) / 100);
+				$self->alpha );
+		} else {
+		}
+		$self->{current}->{can_paint} = 1;
+	EXIT_FILL:		
+		$self->{changed}->{fill} = 0;
+	}
+}	
 
 1;

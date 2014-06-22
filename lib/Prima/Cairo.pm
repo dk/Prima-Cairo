@@ -57,6 +57,7 @@ sub to_cairo_surface
 	}
 	
 	Prima::Cairo::copy_image_data($image, $$surface, 1);
+	$surface->mark_dirty;
 	return $surface;
 }
 

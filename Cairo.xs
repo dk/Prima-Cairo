@@ -18,6 +18,28 @@ PApplication_vmt CApplication;
 PPrinter_vmt CPrinter;
 #define var (( PWidget) widget)
 
+static Byte rev_bytes[256];
+static init_rev_bytes()
+{
+	int i = 0;
+	for ( i = 0; i < 256; i++) {
+		unsigned int j,r = 0;
+		Byte x = i;
+		for (j = 0; j < 8; j++) {
+			if ( x & 0x80 ) r |= 0x100;
+			x <<= 1;
+			r >>= 1;
+		}
+		rev_bytes[i] = r & 0xff;
+	}
+}
+
+static void
+rev_memcpy(register Byte *dst, register Byte *src, register unsigned int stride)
+{
+	while (stride-- > 0) *dst++ = rev_bytes[*src++];
+}
+
 MODULE = Prima::Cairo      PACKAGE = Prima::Cairo
 
 BOOT:
@@ -29,6 +51,7 @@ BOOT:
 	CIcon = (PIcon_vmt)gimme_the_vmt( "Prima::Icon");
 	CApplication = (PApplication_vmt)gimme_the_vmt( "Prima::Application");
 	CPrinter = (PPrinter_vmt)gimme_the_vmt( "Prima::Printer");
+	init_rev_bytes();
 }
 
 PROTOTYPES: ENABLE
@@ -90,7 +113,11 @@ CODE:
 	for ( i = 0; i < h; i++, src_buf -= src_stride, dest_buf += dest_stride, mask_buf -= mask_stride ) {
 		switch(selector) {
 		case 1:
+#if (BYTEORDER!=0x4321) && (BYTEORDER!=0x87654321)
+			rev_memcpy(src_buf, dest_buf, stride);
+#else
 			memcpy(src_buf, dest_buf, stride);
+#endif
 			break;
 		case 8:
 			memcpy(src_buf, dest_buf, w);
@@ -108,7 +135,11 @@ CODE:
 			bc_byte_mono_cr( mask_buf_byte, mask_buf, w, colorref_byte);
 			break;
 		case 101:
+#if (BYTEORDER!=0x4321) && (BYTEORDER!=0x87654321)
+			rev_memcpy(dest_buf, src_buf, stride);
+#else
 			memcpy(dest_buf, src_buf, stride);
+#endif
 			break;
 		case 108:
 			memcpy(dest_buf, src_buf, w);
