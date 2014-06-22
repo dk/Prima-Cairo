@@ -2,6 +2,7 @@ package Prima::Cairo;
 use strict;
 use Prima;
 use Cairo;
+use Carp qw(croak);
 require Exporter;
 require DynaLoader;
 
@@ -15,24 +16,28 @@ $VERSION = '1.01';
 @EXPORT_OK = qw();
 %EXPORT_TAGS = ();
 
-sub Prima::Image::to_cairo_surface
+sub to_cairo_surface
 {
-	my $image = shift;
+	my ($image, $format) = @_;
+	$format ||= 'rgb24';
 
-	my ($pstride, $format);
-
-	if ( $image->type == im::BW ) {
-		$format = 'a1';
-	} elsif ( $image->type == im::Byte) {
-		$format = 'a8';
-	} elsif ( $image->type != im::bpp24) {
-		$image = $image->dup;
-		$image->type(im::bpp24);
-		$format = 'rgb24';
-		$pstride = $image->width * 4;
+	if ( $image->type == im::BW && $format eq 'a1') {
+		# 1-bit alpha
+	} elsif ( $image->type == im::Byte && $format eq 'a8') {
+		# 8-bit alpha
+	} elsif ( $image->isa('Prima::Icon') && $format eq 'argb32') {
+		if ( $image->type != im::bpp24) {
+			my ( $xor, $and ) = $image->split;
+			$xor->type(im::bpp24);
+			$image->combine($xor, $and);
+		}
+	} elsif ( $format eq 'rgb24' || $format eq 'argb32') {
+		if ( $image->type != im::bpp24) {
+			$image = $image->dup;
+			$image->type(im::bpp24);
+		}
 	} else {
-		$format = 'rgb24';
-		$pstride = $image->width * 4;
+		croak "bad combination of $image and $format";
 	}
 
 	my $surface = Cairo::ImageSurface->create($format, $image->size);
@@ -43,7 +48,7 @@ sub Prima::Image::to_cairo_surface
 	}
 	return $surface unless $surface->status eq 'success';
 
-	if ( defined $pstride ) {
+	if ( $format eq 'rgb24' || $format eq 'argb32') {
 		my $stride = Cairo::Format::stride_for_width($format, $image->width);
 		if ( $stride != $image->width * 4) {
 			$surface->status('assertion about stride size failed');
@@ -55,10 +60,14 @@ sub Prima::Image::to_cairo_surface
 	return $surface;
 }
 
+sub Prima::Image::to_cairo_surface { Prima::Cairo::to_cairo_surface($_[0], 'rgb24') }
+sub Prima::Icon::to_cairo_surface { Prima::Cairo::to_cairo_surface($_[0], 'argb32') }
+
 sub Cairo::ImageSurface::to_prima_image
 {
-	my ( $surface ) = @_;
+	my ( $surface, $class ) = @_;
 	my $format = $surface->get_format;
+	$class ||= 'Prima::Image';
 
 	my $pformat;
 	if ( $format eq 'argb32' || $format eq 'rgb24') {
@@ -72,11 +81,12 @@ sub Cairo::ImageSurface::to_prima_image
 		return undef;
 	}
 
-	my $image = Prima::Image->new(
+	my $image = $class->new(
 		width  => $surface->get_width,
 		height => $surface->get_height,
 		type   => $pformat,
 	);
+	$image->autoMasking(am::None) if $image->isa('Prima::Icon');
 	Prima::Cairo::copy_image_data($image, $$surface, 0);
 	return $image;
 }
@@ -233,13 +243,21 @@ system call it like this:
 
    $canvas->cairo_context( transform => 0 );
 
-=item Cairo::ImageSurface::to_prima_image
+=item Cairo::ImageSurface::to_prima_image [ $class = Prima::Image ].
 
-Returns a im::bpp24/im::Byte/im::BW Prima::Image object with pixels copies from the image surface
+Returns a im::bpp24 (for color surfaces) or im::Byte/im::BW (for a8/a1 mask
+surfaces) Prima::Image object with pixels copies from the image surface.
+If C<$class> is 'Prima::Icon' and image surface has 'argb32' format then
+fills the 1-bit alpha channel in the Prima icon object.
 
 =item Prima::Image::to_cairo_surface
 
-Returns a rgb24/a8/a1 Cairo::ImageSurface object with pixels copied from the image
+Returns a rgb24 Cairo::ImageSurface object with pixels copied from the image
+
+=item Prima::Icon::to_cairo_surface
+
+Returns a argb32 Cairo::ImageSurface object with pixels copied from the image and its mask
+
 
 =back
 

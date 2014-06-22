@@ -4,6 +4,7 @@
 #include <DeviceBitmap.h>
 #include <Widget.h>
 #include <Image.h>
+#include <Icon.h>
 #include <Application.h>
 #include <Printer.h>
 #include "prima_cairo.h"
@@ -12,6 +13,7 @@
 PWidget_vmt CWidget;
 PDeviceBitmap_vmt CDeviceBitmap;
 PImage_vmt CImage;
+PIcon_vmt CIcon;
 PApplication_vmt CApplication;
 PPrinter_vmt CPrinter;
 #define var (( PWidget) widget)
@@ -24,6 +26,7 @@ BOOT:
 	CWidget = (PWidget_vmt)gimme_the_vmt( "Prima::Widget");
 	CDeviceBitmap = (PDeviceBitmap_vmt)gimme_the_vmt( "Prima::DeviceBitmap");
 	CImage = (PImage_vmt)gimme_the_vmt( "Prima::Image");
+	CIcon = (PIcon_vmt)gimme_the_vmt( "Prima::Icon");
 	CApplication = (PApplication_vmt)gimme_the_vmt( "Prima::Application");
 	CPrinter = (PPrinter_vmt)gimme_the_vmt( "Prima::Printer");
 }
@@ -37,8 +40,10 @@ copy_image_data(im,s,direction)
 	int direction;
 PREINIT:
 	Handle image;
-	int i, w, h, dest_stride, src_stride, stride, selector, cformat;
-	Byte *dest_buf, *src_buf;
+	int i, w, h, dest_stride, src_stride, mask_stride, stride, selector, cformat;
+	Byte *dest_buf, *src_buf, *mask_buf, *mask_buf_byte;
+	Byte colorref_mono[2] = {255,0};
+	Byte colorref_byte[2] = {1,0};
 	cairo_surface_t * surface;
 CODE:
 	surface = INT2PTR(cairo_surface_t*,s);
@@ -56,7 +61,11 @@ CODE:
 		if ( cformat != CAIRO_FORMAT_A8 ) croak("bad object");
 		break;
 	case imRGB:
-		if ( cformat != CAIRO_FORMAT_ARGB32 && cformat != CAIRO_FORMAT_RGB24) croak("bad object");
+		if (kind_of( image, CIcon)) {
+			if (cformat != CAIRO_FORMAT_ARGB32) croak("bad object"); 
+		} else {
+			if (cformat != CAIRO_FORMAT_RGB24 && cformat != CAIRO_FORMAT_ARGB32) croak("bad object");
+		}
 		break;
 
 	}
@@ -67,28 +76,58 @@ CODE:
 	src_buf    = PImage(image)->data + src_stride * ( h - 1);
 	stride     = ( src_stride > dest_stride ) ? dest_stride : src_stride;
 	selector   = (PImage(image)->type & imBPP) + (direction ? 100 : 0);
-	for ( i = 0; i < h; i++, src_buf -= src_stride, dest_buf += dest_stride ) {
+
+	if (cformat == CAIRO_FORMAT_ARGB32 && kind_of( image, CIcon)) {
+		mask_stride   = PIcon(image)->maskLine;
+		mask_buf      = PIcon(image)->mask + mask_stride * (h - 1);
+		mask_buf_byte = malloc(w);
+		selector++;
+	} else {
+		mask_buf = mask_buf_byte = NULL;
+		mask_stride = 0;
+	}
+ 
+	for ( i = 0; i < h; i++, src_buf -= src_stride, dest_buf += dest_stride, mask_buf -= mask_stride ) {
 		switch(selector) {
 		case 1:
-			memcpy(dest_buf, src_buf, stride);
+			memcpy(src_buf, dest_buf, stride);
 			break;
 		case 8:
-			memcpy(dest_buf, src_buf, w);
+			memcpy(src_buf, dest_buf, w);
 			break;
 		case 24:
 			bc_rgbi_rgb(dest_buf, src_buf, w);
 			break;
+		case 25:
+			bc_rgbi_rgb(dest_buf, src_buf, w);
+			{
+				int j;
+				Byte * alpha = dest_buf + 3;
+				for (j = 0; j < w; j++, alpha += 4) mask_buf_byte[j] = (*alpha < 127) ? 0 : 1;
+			}
+			bc_byte_mono_cr( mask_buf_byte, mask_buf, w, colorref_byte);
+			break;
 		case 101:
-			memcpy(src_buf, dest_buf, stride);
+			memcpy(dest_buf, src_buf, stride);
 			break;
 		case 108:
-			memcpy(src_buf, dest_buf, w);
+			memcpy(dest_buf, src_buf, w);
 			break;
 		case 124:
 			bc_rgb_rgbi(src_buf, dest_buf, w);
 			break;
+		case 125:
+			bc_rgb_rgbi(src_buf, dest_buf, w);
+			bc_mono_byte_cr( mask_buf, mask_buf_byte, w, colorref_mono);
+			{
+				int j;
+				Byte * alpha = dest_buf + 3;
+				for (j = 0; j < w; j++, alpha += 4) *alpha = mask_buf_byte[j];
+			}
+			break;
 		}
 	}
+	if (cformat == CAIRO_FORMAT_ARGB32) free( mask_buf_byte);
 OUTPUT:	
 
 SV*
