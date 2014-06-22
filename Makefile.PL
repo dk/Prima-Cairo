@@ -6,10 +6,7 @@ use Config;
 use Prima::Config;
 
 my @obj  = ('Cairo.o');
-if ( 
-	$^O eq 'MSWin32' or 
-	( $^O eq 'cygwin' and $Prima::Config::Config{platform} eq 'win32')
-) {
+if ( $Prima::Config::Config{platform} eq 'win32') {
 	push @obj,  'win32.o';
 } else {
 	push @obj,  'x11.o';
@@ -35,14 +32,14 @@ WriteMakefile(
 	AUTHOR		   => 'Dmitry Karasik <dmitry@karasik.eu.org>',
 	LIBS		   => "$Prima::Config::Config{libs} $cairo_cfg{libs}",
 	DEFINE		   => "$Prima::Config::Config{define} $cairo_cfg{cflags}",
-	INC		       => "$Prima::Config::Config{inc} -Iinclude",
+	INC                => "$Prima::Config::Config{inc} -Iinclude",
 	OBJECT		   => "@obj",
-	META_MERGE	  => {
-		resources => {
+	META_MERGE	   => {
+		resources  => {
 			repository => 'http://github.com/dk/Prima-Cairo',
 		},
-		no_index  => {
-			directory  => [qw(include win32)],
+		no_index   => {
+			directory  => [qw(include)],
 			file	   => [qw(Makefile.PL)],
 		},
 	},
