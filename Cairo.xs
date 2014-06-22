@@ -40,6 +40,12 @@ rev_memcpy(register Byte *dst, register Byte *src, register unsigned int stride)
 	while (stride-- > 0) *dst++ = rev_bytes[*src++];
 }
 
+static void
+invert( register Byte *dst, register unsigned int stride)
+{
+	while (stride-- > 0) *dst = ~(*dst++);
+}
+
 MODULE = Prima::Cairo      PACKAGE = Prima::Cairo
 
 BOOT:
@@ -118,6 +124,7 @@ CODE:
 #else
 			memcpy(src_buf, dest_buf, stride);
 #endif
+			invert(src_buf, stride);
 			break;
 		case 8:
 			memcpy(src_buf, dest_buf, w);
@@ -140,6 +147,7 @@ CODE:
 #else
 			memcpy(dest_buf, src_buf, stride);
 #endif
+			invert(dest_buf, stride);
 			break;
 		case 108:
 			memcpy(dest_buf, src_buf, w);

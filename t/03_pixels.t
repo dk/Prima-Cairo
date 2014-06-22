@@ -7,7 +7,7 @@ use Test::More;
 use Prima::noX11;
 use Prima qw(Cairo);
 
-plan tests => 14;
+plan tests => 16;
 
 ############# rgb24 
 
@@ -67,7 +67,7 @@ $c1->mask_surface($surface,0,0);
 $c1->fill;
 my $b1 = $s1->to_prima_image;
 $b1->set( conversion => ict::None, type => im::BW );
-ok( $b1->data eq $original->data, "a1 bit order");
+ok( $b1->data eq ~$original->data, "a1 bit order");
 
 ############# argb32 / icon
 
@@ -86,3 +86,15 @@ ok( $surface->get_format eq 'argb32', 'type is argb32');
 $image = $surface->to_prima_image('Prima::Icon');
 ok( $image && $image->data eq $original->data, "prima icon data ok");
 ok( $image && $image->mask eq $original->mask, "prima icon mask ok");
+
+my $s2 = Cairo::ImageSurface->create('rgb24', 2, 2);
+my $c2 = Cairo::Context->create($s2);
+$c2->set_source_rgb(1,1,1);
+$c2->rectangle(0,0,2,2);
+$c2->fill;
+$c2->set_source_surface($surface,0,0);
+$c2->paint;
+my $b2 = $s2->to_prima_image;
+ok( $b2->pixel(0,1) == $original->pixel(0,1) && $b2->pixel(1,1) == $original->pixel(1,1) , "icon saved pixels");
+ok( $b2->pixel(0,0) == 0xffffff && $b2->pixel(1,0) == 0xffffff, "icon cleared pixels");
+

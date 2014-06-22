@@ -297,9 +297,9 @@ sub _fill
 		$bc = 0x000000 if $rop2 == rop::Blackness;
 		$bc = 0xFFFFFF if $rop2 == rop::Whiteness;
 
-		my @fp  = @{$self-> SUPER::fillPattern};
-		my $solid_back = ! grep { $_ != 0 } @fp;
-		my $solid_fore = ! grep { $_ != 0xff } @fp;
+		my $fp         = join('', @{$self-> SUPER::fillPattern});
+		my $solid_back = $fp =~ /^\x00{8}$/;
+		my $solid_fore = $fp =~ /^\xff{8}$/; 
 		if (
 			($solid_fore && $rop  == rop::NoOper) ||
 			($solid_back && $rop2 == rop::NoOper) ||
@@ -310,13 +310,33 @@ sub _fill
 		}
 
 		if ( $solid_fore || $solid_back ) {
+			# solid color
 			my $color = $solid_fore ? $fc : $bc;
 			$self->set_source_rgba(
 				int((($color & 0xff0000) >> 16) * 100 / 256 + 0.5) / 100, 
 				int((($color & 0xff00) >> 8) * 100 / 256 + 0.5) / 100, 
 				int(($color & 0xff)*100/256 + 0.5) / 100);
 				$self->alpha );
+		} elsif ( $rop != rop::NoOper && $rop2 != rop::NoOper ) {
+			# opaque pattern
+			my $i = Prima::Image->new(
+				height   => 8,
+				width    => 8,
+				type     => im::bpp1,
+				colormap => [ $bc, $fc ],
+				data     => $fp,
+				lineSize => 1,
+			);
+			my $surface = $i->to_cairo_surface;
+			my $pattern = Cairo::SurfacePattern->create($surface);
+			$pattern->set_extend('repeat');
+			$self->set_source($pattern);
 		} else {
+			# transparent pattern
+			if ($rop == rop::NoOper) {
+				$_ = ~$_ for @fp;
+				$fc = $bc;
+			}				
 		}
 		$self->{current}->{can_paint} = 1;
 	EXIT_FILL:		
