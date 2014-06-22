@@ -337,6 +337,22 @@ sub _fill
 				$_ = ~$_ for @fp;
 				$fc = $bc;
 			}				
+			$self->set_source_rgba(
+				int((($fc & 0xff0000) >> 16) * 100 / 256 + 0.5) / 100, 
+				int((($fc & 0xff00) >> 8) * 100 / 256 + 0.5) / 100, 
+				int(($fc & 0xff)*100/256 + 0.5) / 100);
+				$self->alpha );
+			my $i = Prima::Image->new(
+				height   => 8,
+				width    => 8,
+				type     => im::BW,
+				data     => $fp,
+				lineSize => 1,
+			);
+			my $surface = Prima::Cairo::to_cairo_surface($i, 'a1');
+			my $pattern = Cairo::SurfacePattern->create($surface);
+			$pattern->set_extend('repeat');
+			#$self->mask($pattern);
 		}
 		$self->{current}->{can_paint} = 1;
 	EXIT_FILL:		

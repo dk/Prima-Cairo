@@ -64,7 +64,6 @@ my $s1 = Cairo::ImageSurface->create('rgb24', 32, 2);
 my $c1 = Cairo::Context->create($s1);
 $c1->set_source_rgb(1,1,1);
 $c1->mask_surface($surface,0,0);
-$c1->fill;
 my $b1 = $s1->to_prima_image;
 $b1->set( conversion => ict::None, type => im::BW );
 ok( $b1->data eq ~$original->data, "a1 bit order");
