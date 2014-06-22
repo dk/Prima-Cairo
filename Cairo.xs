@@ -37,24 +37,57 @@ copy_image_data(im,s,direction)
 	int direction;
 PREINIT:
 	Handle image;
-	int i, w, h, dest_stride, src_stride;
+	int i, w, h, dest_stride, src_stride, stride, selector, cformat;
 	Byte *dest_buf, *src_buf;
 	cairo_surface_t * surface;
 CODE:
 	surface = INT2PTR(cairo_surface_t*,s);
 	dest_stride = cairo_image_surface_get_stride(surface);
 	dest_buf    = cairo_image_surface_get_data(surface);
-	if ( !(image = gimme_the_mate(im)) || !kind_of( image, CImage) || PImage(image)->type != imbpp24)
+	cformat     = cairo_image_surface_get_format(surface);
+
+	if ( !(image = gimme_the_mate(im)) || !kind_of( image, CImage))
 		croak("bad object");
+	switch (PImage(image)->type) {
+	case imBW:
+		if ( cformat != CAIRO_FORMAT_A1 ) croak("bad object");
+		break;
+	case imByte:
+		if ( cformat != CAIRO_FORMAT_A8 ) croak("bad object");
+		break;
+	case imRGB:
+		if ( cformat != CAIRO_FORMAT_ARGB32 && cformat != CAIRO_FORMAT_RGB24) croak("bad object");
+		break;
+
+	}
+
 	w   	   = PImage(image)->w;
 	h   	   = PImage(image)->h;
 	src_stride = PImage(image)->lineSize;
 	src_buf    = PImage(image)->data + src_stride * ( h - 1);
+	stride     = ( src_stride > dest_stride ) ? dest_stride : src_stride;
+	selector   = (PImage(image)->type & imBPP) + (direction ? 100 : 0);
 	for ( i = 0; i < h; i++, src_buf -= src_stride, dest_buf += dest_stride ) {
-		if (direction)
-			bc_rgb_rgbi(src_buf, dest_buf, w);
-		else
+		switch(selector) {
+		case 1:
+			memcpy(dest_buf, src_buf, stride);
+			break;
+		case 8:
+			memcpy(dest_buf, src_buf, w);
+			break;
+		case 24:
 			bc_rgbi_rgb(dest_buf, src_buf, w);
+			break;
+		case 101:
+			memcpy(src_buf, dest_buf, stride);
+			break;
+		case 108:
+			memcpy(src_buf, dest_buf, w);
+			break;
+		case 124:
+			bc_rgb_rgbi(src_buf, dest_buf, w);
+			break;
+		}
 	}
 OUTPUT:	
 

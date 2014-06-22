@@ -19,23 +19,36 @@ sub Prima::Image::to_cairo_surface
 {
 	my $image = shift;
 
-	unless ( $image->type == im::bpp24 ) {
+	my ($pstride, $format);
+
+	if ( $image->type == im::BW ) {
+		$format = 'a1';
+	} elsif ( $image->type == im::Byte) {
+		$format = 'a8';
+	} elsif ( $image->type != im::bpp24) {
 		$image = $image->dup;
 		$image->type(im::bpp24);
+		$format = 'rgb24';
+		$pstride = $image->width * 4;
+	} else {
+		$format = 'rgb24';
+		$pstride = $image->width * 4;
 	}
 
-	my $surface = Cairo::ImageSurface->create('rgb24', $image->size);
+	my $surface = Cairo::ImageSurface->create($format, $image->size);
 	unless ($surface) {
-		$surface = Cairo::ImageSurface->create('rgb24', 1, 1);
+		$surface = Cairo::ImageSurface->create($format, 1, 1);
 		$surface->status('not enough memory');
 		return $surface;
 	}
 	return $surface unless $surface->status eq 'success';
-	
-	my $stride = Cairo::Format::stride_for_width('rgb24', $image->width);
-	if ( $stride != $image->width * 4) {
-		$surface->status('assertion about stride size failed');
-		return $surface;
+
+	if ( defined $pstride ) {
+		my $stride = Cairo::Format::stride_for_width($format, $image->width);
+		if ( $stride != $image->width * 4) {
+			$surface->status('assertion about stride size failed');
+			return $surface;
+		}
 	}
 	
 	Prima::Cairo::copy_image_data($image, $$surface, 1);
@@ -45,10 +58,24 @@ sub Prima::Image::to_cairo_surface
 sub Cairo::ImageSurface::to_prima_image
 {
 	my ( $surface ) = @_;
+	my $format = $surface->get_format;
+
+	my $pformat;
+	if ( $format eq 'argb32' || $format eq 'rgb24') {
+		$pformat = im::bpp24;
+	} elsif ( $format eq 'a8') {
+		$pformat = im::Byte;
+	} elsif ( $format eq 'a1') {
+		$pformat = im::BW;
+	} else {
+		warn "Image surface format '$format' is not understood";
+		return undef;
+	}
+
 	my $image = Prima::Image->new(
 		width  => $surface->get_width,
 		height => $surface->get_height,
-		type   => im::bpp24,
+		type   => $pformat,
 	);
 	Prima::Cairo::copy_image_data($image, $$surface, 0);
 	return $image;
@@ -208,11 +235,11 @@ system call it like this:
 
 =item Cairo::ImageSurface::to_prima_image
 
-Returns a im::bpp24 Prima::Image object with pixels copies from the image surface
+Returns a im::bpp24/im::Byte/im::BW Prima::Image object with pixels copies from the image surface
 
 =item Prima::Image::to_cairo_surface
 
-Returns a rgb24 Cairo::ImageSurface object with pixels copied from the image
+Returns a rgb24/a8/a1 Cairo::ImageSurface object with pixels copied from the image
 
 =back
 
