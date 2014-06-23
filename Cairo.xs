@@ -166,7 +166,7 @@ CODE:
 			break;
 		}
 	}
-	if (cformat == CAIRO_FORMAT_ARGB32) free( mask_buf_byte);
+	if (mask_buf_byte) free( mask_buf_byte);
 OUTPUT:	
 
 SV*
