@@ -119,11 +119,15 @@ CODE:
 	for ( i = 0; i < h; i++, src_buf -= src_stride, dest_buf += dest_stride, mask_buf -= mask_stride ) {
 		switch(selector) {
 		case 1:
-#if (BYTEORDER!=0x4321) && (BYTEORDER!=0x87654321)
+/*
+ * @CAIRO_FORMAT_A1: each pixel is a 1-bit quantity holding
+ *   an alpha value. Pixels are packed together into 32-bit
+ *   quantities. The ordering of the bits matches the
+ *   endianess of the platform. On a big-endian machine, the
+ *   first pixel is in the uppermost bit, on a little-endian
+ *   machine the first pixel is in the least-significant bit.
+*/
 			rev_memcpy(src_buf, dest_buf, stride);
-#else
-			memcpy(src_buf, dest_buf, stride);
-#endif
 			invert(src_buf, stride);
 			break;
 		case 8:
@@ -142,11 +146,7 @@ CODE:
 			bc_byte_mono_cr( mask_buf_byte, mask_buf, w, colorref_byte);
 			break;
 		case 101:
-#if (BYTEORDER!=0x4321) && (BYTEORDER!=0x87654321)
 			rev_memcpy(dest_buf, src_buf, stride);
-#else
-			memcpy(dest_buf, src_buf, stride);
-#endif
 			invert(dest_buf, stride);
 			break;
 		case 108:
