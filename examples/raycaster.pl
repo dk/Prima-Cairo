@@ -7,6 +7,7 @@ use warnings;
 use POSIX qw(ceil floor);
 use Time::HiRes qw(time);
 use Prima qw(Application MsgBox Cairo);
+use FindBin qw($Bin);
 
 my ($use_inline_c, $libs);
 BEGIN { 
@@ -18,9 +19,9 @@ BEGIN {
 my $pi          = atan2(1,0)*2;
 my $twopi       = $pi*2;
 my ( $x, $y, $direction, $paces ) = (15.3,-1.2,$pi*3,0);
-my $weapon      = Cairo::ImageSurface->create_from_png('knife_hand.png');
-my $sky         = Prima::Image->load('deathvalley_panorama.jpg')->to_cairo_surface;
-my $wall        = Prima::Image->load('wall_texture.jpg')->to_cairo_surface;
+my $weapon      = Cairo::ImageSurface->create_from_png("$Bin/knife_hand.png");
+my $sky         = Prima::Image->load("$Bin/deathvalley_panorama.jpg")->to_cairo_surface;
+my $wall        = Prima::Image->load("$Bin/wall_texture.jpg")->to_cairo_surface;
 my $size        = 32;
 my @grid        = map {(0.3 > rand) ? 1 : 0} 1..$size*$size;
 my $light       = 0;
