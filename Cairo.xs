@@ -22,15 +22,23 @@ static Byte rev_bytes[256];
 static init_rev_bytes()
 {
 	int i = 0;
-	for ( i = 0; i < 256; i++) {
-		unsigned int j,r = 0;
-		Byte x = i;
-		for (j = 0; j < 8; j++) {
-			if ( x & 0x80 ) r |= 0x100;
-			x <<= 1;
-			r >>= 1;
+    	static const int end = 1;
+
+    	if ( *((char *) &end) == 0x01 ) {
+		// little-endian
+		for ( i = 0; i < 256; i++) {
+			unsigned int j,r = 0;
+			Byte x = i;
+			for (j = 0; j < 8; j++) {
+				if ( x & 0x80 ) r |= 0x100;
+				x <<= 1;
+				r >>= 1;
+			}
+			rev_bytes[i] = r & 0xff;
 		}
-		rev_bytes[i] = r & 0xff;
+	} else {
+		// big-endian
+		for ( i = 0; i < 256; i++) rev_bytes[i] = i;
 	}
 }
 
