@@ -7,7 +7,7 @@ use Test::More;
 use Prima::noX11;
 use Prima qw(Cairo);
 
-plan tests => 16;
+plan tests => 19;
 
 ############# rgb24 
 
@@ -25,6 +25,15 @@ ok( $surface->get_format eq 'rgb24', 'type is rgb24');
 
 my $image = $surface->to_prima_image;
 ok( $image && $image->data eq $original->data, "prima bpp24 image ok");
+
+############# argb32 
+
+$surface = Prima::Cairo::to_cairo_surface($original, 'argb32'); 
+ok( $surface->status eq 'success', 'cairo argb32 surface ok');
+ok( $surface->get_format eq 'argb32', 'type is argb32');
+
+$image = $surface->to_prima_image;
+ok( $image && $image->data eq $original->data, "prima argb32 image ok");
 
 ############# a8
 

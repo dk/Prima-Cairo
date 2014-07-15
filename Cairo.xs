@@ -119,6 +119,8 @@ CODE:
 		mask_buf      = PIcon(image)->mask + mask_stride * (h - 1);
 		mask_buf_byte = malloc(w);
 		selector++;
+	} else if (direction && cformat == CAIRO_FORMAT_ARGB32) {
+		selector += 2;
 	} else {
 		mask_buf = mask_buf_byte = NULL;
 		mask_stride = 0;
@@ -126,6 +128,7 @@ CODE:
  
 	for ( i = 0; i < h; i++, src_buf -= src_stride, dest_buf += dest_stride, mask_buf -= mask_stride ) {
 		switch(selector) {
+		/* from cairo surface */
 		case 1:
 /*
  * @CAIRO_FORMAT_A1: each pixel is a 1-bit quantity holding
@@ -153,6 +156,7 @@ CODE:
 			}
 			bc_byte_mono_cr( mask_buf_byte, mask_buf, w, colorref_byte);
 			break;
+		/* to cairo surface */
 		case 101:
 			rev_memcpy(dest_buf, src_buf, stride);
 			invert(dest_buf, stride);
@@ -170,6 +174,14 @@ CODE:
 				int j;
 				Byte * alpha = dest_buf + 3;
 				for (j = 0; j < w; j++, alpha += 4) *alpha = mask_buf_byte[j];
+			}
+			break;
+		case 126:
+			bc_rgb_rgbi(src_buf, dest_buf, w);
+			{
+				int j;
+				Byte * alpha = dest_buf + 3;
+				for (j = 0; j < w; j++, alpha += 4) *alpha = 0xff;
 			}
 			break;
 		}
