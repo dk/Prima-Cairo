@@ -51,7 +51,10 @@ rev_memcpy(register Byte *dst, register Byte *src, register unsigned int stride)
 static void
 invert( register Byte *dst, register unsigned int stride)
 {
-	while (stride-- > 0) *dst = ~(*dst++);
+	while (stride-- > 0) {
+		register Byte x = ~*dst;
+		*dst++ = x;
+	}
 }
 
 MODULE = Prima::Cairo      PACKAGE = Prima::Cairo
@@ -120,6 +123,7 @@ CODE:
 		mask_buf_byte = malloc(w);
 		selector++;
 	} else if (direction && cformat == CAIRO_FORMAT_ARGB32) {
+		mask_buf = mask_buf_byte = NULL;
 		selector += 2;
 	} else {
 		mask_buf = mask_buf_byte = NULL;
