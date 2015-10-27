@@ -7,16 +7,70 @@
 #include <Icon.h>
 #include <Application.h>
 #include <Printer.h>
-#include "prima_cairo.h"
-#include <cairo.h>
 
+#ifdef PRIMA_PLATFORM_X11
+#include <unix/guts.h>
+#define Drawable        XDrawable
+#define Font            XFont
+#include <cairo.h>
+#include <cairo-xlib.h>
+#define sys (( PDrawableSysData) var-> sysData)
+UnixGuts * pguts;
+#else
+#include <win32/win32guts.h>
+#include <cairo.h>
+#include <cairo-win32.h>
+#define sys (( PDrawableData) var-> sysData)
+#endif
+
+#define REQ_TARGET_APPLICATION 0
+#define REQ_TARGET_WINDOW      1
+#define REQ_TARGET_BITMAP      2
+#define REQ_TARGET_PIXMAP      3
+#define REQ_TARGET_IMAGE       4
+#define REQ_TARGET_PRINTER     5
+
+#define var (( PDrawable) widget)
 PWidget_vmt CWidget;
 PDeviceBitmap_vmt CDeviceBitmap;
 PImage_vmt CImage;
 PIcon_vmt CIcon;
 PApplication_vmt CApplication;
 PPrinter_vmt CPrinter;
-#define var (( PWidget) widget)
+
+void*
+apc_cairo_surface_create( Handle widget, int request)
+{
+	cairo_surface_t * result = NULL;
+#ifdef PRIMA_PLATFORM_X11
+	Point p;
+	if ( pguts == NULL )
+		pguts = (UnixGuts*) apc_system_action("unix_guts");
+
+	XCHECKPOINT;
+
+	switch ( request) {
+	case REQ_TARGET_BITMAP:
+		result = cairo_xlib_surface_create_for_bitmap(DISP, sys->gdrawable, ScreenOfDisplay(DISP,SCREEN), var->w, var->h);
+		break;
+	case REQ_TARGET_WINDOW:
+		p = apc_widget_get_size( widget );
+		result = cairo_xlib_surface_create(DISP, sys->gdrawable, VISUAL, p.x, p.y);
+		break;
+	case REQ_TARGET_PRINTER:
+		break;
+	default:
+		result = cairo_xlib_surface_create(DISP, sys->gdrawable, VISUAL, var->w, var->h);
+	}
+	
+	XCHECKPOINT;
+#else
+	result = ( request == REQ_TARGET_PRINTER ) ?
+        	cairo_win32_printing_surface_create(sys-> ps) :
+        	cairo_win32_surface_create(sys-> ps);
+#endif
+	return (void*) result;
+}
 
 static Byte rev_bytes[256];
 static init_rev_bytes()

@@ -1,5 +1,8 @@
 Revision history for Perl module Prima-Cairo
 
+1.02 2015-10-27
+ - merge system-specific code 
+
 1.01 2014-06-08 
  - copy pixels between image surface and prima image; optimized raycaster
 
