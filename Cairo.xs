@@ -139,6 +139,7 @@ PREINIT:
 	Byte colorref_mono[2] = {255,0};
 	Byte colorref_byte[2] = {1,0};
 	cairo_surface_t * surface;
+    	static const int end = 1;
 CODE:
 	surface = INT2PTR(cairo_surface_t*,s);
 	dest_stride = cairo_image_surface_get_stride(surface);
@@ -183,6 +184,11 @@ CODE:
 		mask_buf = mask_buf_byte = NULL;
 		mask_stride = 0;
 	}
+    	
+	if ( *((char *) &end) != 0x01 && (cformat == CAIRO_FORMAT_ARGB32 || cformat == CAIRO_FORMAT_RGB24) ) {
+		// big-endian mess
+		selector += 1000;
+	}
  
 	for ( i = 0; i < h; i++, src_buf -= src_stride, dest_buf += dest_stride, mask_buf -= mask_stride ) {
 		switch(selector) {
@@ -214,6 +220,18 @@ CODE:
 			}
 			bc_byte_mono_cr( mask_buf_byte, mask_buf, w, colorref_byte);
 			break;
+		case 1024:
+			bc_ibgr_rgb(dest_buf, src_buf, w);
+			break;
+		case 1025:
+			bc_ibgr_rgb(dest_buf, src_buf, w);
+			{
+				int j;
+				Byte * alpha = dest_buf;
+				for (j = 0; j < w; j++, alpha += 4) mask_buf_byte[j] = (*alpha < 127) ? 0 : 1;
+			}
+			bc_byte_mono_cr( mask_buf_byte, mask_buf, w, colorref_byte);
+			break;
 		/* to cairo surface */
 		case 101:
 			rev_memcpy(dest_buf, src_buf, stride);
@@ -239,6 +257,26 @@ CODE:
 			{
 				int j;
 				Byte * alpha = dest_buf + 3;
+				for (j = 0; j < w; j++, alpha += 4) *alpha = 0xff;
+			}
+			break;
+		case 1124:
+			bc_rgb_ibgr(src_buf, dest_buf, w);
+			break;
+		case 1125:
+			bc_rgb_ibgr(src_buf, dest_buf, w);
+			bc_mono_byte_cr( mask_buf, mask_buf_byte, w, colorref_mono);
+			{
+				int j;
+				Byte * alpha = dest_buf;
+				for (j = 0; j < w; j++, alpha += 4) *alpha = mask_buf_byte[j];
+			}
+			break;
+		case 1126:
+			bc_rgb_ibgr(src_buf, dest_buf, w);
+			{
+				int j;
+				Byte * alpha = dest_buf;
 				for (j = 0; j < w; j++, alpha += 4) *alpha = 0xff;
 			}
 			break;
