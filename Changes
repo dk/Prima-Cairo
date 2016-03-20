@@ -1,5 +1,8 @@
 Revision history for Perl module Prima-Cairo
 
+1.03 2016-03-20
+ - fixes for big-endian architecture
+
 1.02 2015-10-27
  - merge system-specific code 
 
