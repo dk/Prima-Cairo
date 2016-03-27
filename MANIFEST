@@ -1,5 +1,5 @@
 MANIFEST
-README
+README.md
 Changes
 Makefile.PL
 Cairo.xs
