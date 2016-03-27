@@ -1,13 +1,13 @@
 NAME
 ====
 
-    Prima::Cairo - Prima extension for Cairo drawing
+Prima::Cairo - Prima extension for Cairo drawing
 
 DESCRIPTION
 ===========
 
-    The module allows for programming Cairo library together with Prima
-    widgets.
+The module allows for programming Cairo library together with Prima
+widgets.
 
 SYNOPSIS
 ========
@@ -38,32 +38,32 @@ SYNOPSIS
 Installation on Strawberry win32
 --------------------------------
 
-    Before installing the module, you need to install Cairo perl wrapper.
-    That requires libcairo binaries, includes, and pkg-config.
+Before installing the module, you need to install Cairo perl wrapper.
+That requires libcairo binaries, includes, and pkg-config.
 
-    In case you don't have cairo binaries and include files, grab them here:
+In case you don't have cairo binaries and include files, grab them here:
 
-    http://karasik.eu.org/misc/cairo/cairo-win32.zip .
+http://karasik.eu.org/misc/cairo/cairo-win32.zip .
 
-    Hack lib/pkgconfig/cairo.pc and point PKG_CONFIG_PATH to the directory
-    where it is located.
+Hack lib/pkgconfig/cairo.pc and point PKG_CONFIG_PATH to the directory
+where it is located.
 
-    Strawberry 5.20 is shipped with a broken pkg-config (
-    https://rt.cpan.org/Ticket/Display.html?id=96315,
-    https://rt.cpan.org/Ticket/Display.html?id=96317 ), if you need a
-    working one grab it here:
+Strawberry 5.20 is shipped with a broken pkg-config (
+https://rt.cpan.org/Ticket/Display.html?id=96315,
+https://rt.cpan.org/Ticket/Display.html?id=96317 ), if you need a
+working one grab it here:
 
-    http://karasik.eu.org/misc/cairo/pkgconfig.zip
+http://karasik.eu.org/misc/cairo/pkgconfig.zip
 
-    This setup is needed both for Cairo and Prima-Cairo.
+This setup is needed both for Cairo and Prima-Cairo.
 
 AUTHOR
 =====
 
-    Dmitry Karasik, <dmitry@karasik.eu.org>.
+Dmitry Karasik, <dmitry@karasik.eu.org>.
 
 LICENSE
 =======
 
-    This software is distributed under the BSD License.
+This software is distributed under the BSD License.
 
