@@ -10,7 +10,7 @@ my %cairo_cfg = ExtUtils::PkgConfig->find ("cairo >= 1.0.0");
 WriteMakefile(
 	NAME		   => 'Prima::Cairo',
 	VERSION_FROM	   => 'lib/Prima/Cairo.pm',
-	MIN_PERL_VERSION   => '5.008',
+	MIN_PERL_VERSION   => '5.010',
 	LICENSE            => 'BSD',
 	PREREQ_PM	   => {
 		'Prima'               => 1.42,
