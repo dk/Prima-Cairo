@@ -14,6 +14,9 @@
 #define Font            XFont
 #include <cairo.h>
 #include <cairo-xlib.h>
+#ifdef HAVE_X11_EXTENSIONS_XRENDER_H
+#include <cairo-xlib-xrender.h>
+#endif
 #define sys (( PDrawableSysData) var-> sysData)
 UnixGuts * pguts;
 #else
@@ -56,8 +59,12 @@ apc_cairo_surface_create( Handle widget, int request)
 		break;
 	case REQ_TARGET_WINDOW:
 		p = apc_widget_get_size( widget );
-		visual = sys->visual ? sys-> visual->visual : VISUAL;
-		result = cairo_xlib_surface_create(DISP, sys->gdrawable, visual, p.x, p.y);
+#ifdef HAVE_X11_EXTENSIONS_XRENDER_H
+		if ( sys-> flags. layered )
+			result = cairo_xlib_surface_create_with_xrender_format(DISP, sys->gdrawable, ScreenOfDisplay(DISP,SCREEN), pguts->argb_pic_format, p.x, p.y);
+		else
+#endif
+			result = cairo_xlib_surface_create(DISP, sys->gdrawable, VISUAL, p.x, p.y);
 		break;
 	case REQ_TARGET_PRINTER:
 		break;
@@ -75,7 +82,8 @@ apc_cairo_surface_create( Handle widget, int request)
 }
 
 static Byte rev_bytes[256];
-static init_rev_bytes()
+static void
+init_rev_bytes()
 {
 	int i = 0;
     	static const int end = 1;
