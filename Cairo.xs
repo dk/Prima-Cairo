@@ -44,6 +44,7 @@ apc_cairo_surface_create( Handle widget, int request)
 	cairo_surface_t * result = NULL;
 #ifdef PRIMA_PLATFORM_X11
 	Point p;
+	Visual *visual;
 	if ( pguts == NULL )
 		pguts = (UnixGuts*) apc_system_action("unix_guts");
 
@@ -55,7 +56,8 @@ apc_cairo_surface_create( Handle widget, int request)
 		break;
 	case REQ_TARGET_WINDOW:
 		p = apc_widget_get_size( widget );
-		result = cairo_xlib_surface_create(DISP, sys->gdrawable, VISUAL, p.x, p.y);
+		visual = sys->visual ? sys-> visual->visual : VISUAL;
+		result = cairo_xlib_surface_create(DISP, sys->gdrawable, visual, p.x, p.y);
 		break;
 	case REQ_TARGET_PRINTER:
 		break;
