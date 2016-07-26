@@ -70,8 +70,12 @@ sub Cairo::ImageSurface::to_prima_image
 	my $format = $surface->get_format;
 	$class ||= 'Prima::Image';
 
-	my $pformat;
-	if ( $format eq 'argb32' || $format eq 'rgb24') {
+	my ( $pformat, $mformat );
+	$mformat = im::bpp1;
+	if ( $format eq 'argb32') {
+		$pformat = im::bpp24;
+		$mformat = im::bpp8;
+	} elsif ( $format eq 'rgb24') {
 		$pformat = im::bpp24;
 	} elsif ( $format eq 'a8') {
 		$pformat = im::Byte;
@@ -83,11 +87,12 @@ sub Cairo::ImageSurface::to_prima_image
 	}
 
 	my $image = $class->new(
-		width  => $surface->get_width,
-		height => $surface->get_height,
-		type   => $pformat,
+		width       => $surface->get_width,
+		height      => $surface->get_height,
+		type        => $pformat,
+		maskType    => $mformat, 
+		autoMasking => am::None,
 	);
-	$image->autoMasking(am::None) if $image->isa('Prima::Icon');
 	Prima::Cairo::copy_image_data($image, $$surface, 0);
 	return $image;
 }

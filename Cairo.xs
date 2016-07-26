@@ -69,7 +69,12 @@ apc_cairo_surface_create( Handle widget, int request)
 	case REQ_TARGET_PRINTER:
 		break;
 	default:
-		result = cairo_xlib_surface_create(DISP, sys->gdrawable, VISUAL, var->w, var->h);
+#ifdef HAVE_X11_EXTENSIONS_XRENDER_H
+		if ( sys-> flags. layered )
+			result = cairo_xlib_surface_create_with_xrender_format(DISP, sys->gdrawable, ScreenOfDisplay(DISP,SCREEN), pguts->argb_pic_format, var->w, var->h);
+		else
+#endif
+			result = cairo_xlib_surface_create(DISP, sys->gdrawable, VISUAL, var->w, var->h);
 	}
 	
 	XCHECKPOINT;
@@ -121,6 +126,17 @@ invert( register Byte *dst, register unsigned int stride)
 	}
 }
 
+#define T_FROM_CAIRO  0
+#define T_TO_CAIRO    0x100
+#define T_LE          0
+#define T_BE          0x1000
+#define T_PALETTE     0
+#define T_RGB         0
+#define T_ARGB        0x2000
+#define T_A1          0
+#define T_A8          0x4000
+#define T_A0          0x8000
+
 MODULE = Prima::Cairo      PACKAGE = Prima::Cairo
 
 BOOT:
@@ -157,19 +173,19 @@ CODE:
 	cformat     = cairo_image_surface_get_format(surface);
 
 	if ( !(image = gimme_the_mate(im)) || !kind_of( image, CImage))
-		croak("bad object");
+		croak("bad object: not an image");
 	switch (PImage(image)->type) {
 	case imBW:
-		if ( cformat != CAIRO_FORMAT_A1 ) croak("bad object");
+		if ( cformat != CAIRO_FORMAT_A1 ) croak("bad surface: not in a1 format");
 		break;
 	case imByte:
-		if ( cformat != CAIRO_FORMAT_A8 ) croak("bad object");
+		if ( cformat != CAIRO_FORMAT_A8 ) croak("bad surface: not in a8 format");
 		break;
 	case imRGB:
 		if (kind_of( image, CIcon)) {
-			if (cformat != CAIRO_FORMAT_ARGB32) croak("bad object"); 
+			if (cformat != CAIRO_FORMAT_ARGB32) croak("bad surface: not in argb32 format"); 
 		} else {
-			if (cformat != CAIRO_FORMAT_RGB24 && cformat != CAIRO_FORMAT_ARGB32) croak("bad object");
+			if (cformat != CAIRO_FORMAT_RGB24 && cformat != CAIRO_FORMAT_ARGB32) croak("bad surface: not in rgb24/argb32 format");
 		}
 		break;
 
@@ -180,16 +196,17 @@ CODE:
 	src_stride = PImage(image)->lineSize;
 	src_buf    = PImage(image)->data + src_stride * ( h - 1);
 	stride     = ( src_stride > dest_stride ) ? dest_stride : src_stride;
-	selector   = (PImage(image)->type & imBPP) + (direction ? 100 : 0);
+	selector   = (PImage(image)->type & imBPP) + (direction ? T_TO_CAIRO : T_FROM_CAIRO);
 
 	if (cformat == CAIRO_FORMAT_ARGB32 && kind_of( image, CIcon)) {
 		mask_stride   = PIcon(image)->maskLine;
 		mask_buf      = PIcon(image)->mask + mask_stride * (h - 1);
 		mask_buf_byte = malloc(w);
-		selector++;
+		selector |= T_ARGB | T_A1;
+		if ( PIcon(image)->maskType == imbpp8) selector |= T_A8;
 	} else if (direction && cformat == CAIRO_FORMAT_ARGB32) {
 		mask_buf = mask_buf_byte = NULL;
-		selector += 2;
+		selector |= T_ARGB | T_A0;
 	} else {
 		mask_buf = mask_buf_byte = NULL;
 		mask_stride = 0;
@@ -197,13 +214,14 @@ CODE:
     	
 	if ( *((char *) &end) != 0x01 && (cformat == CAIRO_FORMAT_ARGB32 || cformat == CAIRO_FORMAT_RGB24) ) {
 		// big-endian mess
-		selector += 1000;
-	}
+		selector |= T_BE;
+	} else 
+		selector |= T_LE;
  
 	for ( i = 0; i < h; i++, src_buf -= src_stride, dest_buf += dest_stride, mask_buf -= mask_stride ) {
 		switch(selector) {
 		/* from cairo surface */
-		case 1:
+		case T_FROM_CAIRO | T_LE | T_PALETTE | 1:
 /*
  * @CAIRO_FORMAT_A1: each pixel is a 1-bit quantity holding
  *   an alpha value. Pixels are packed together into 32-bit
@@ -215,13 +233,13 @@ CODE:
 			rev_memcpy(src_buf, dest_buf, stride);
 			invert(src_buf, stride);
 			break;
-		case 8:
+		case T_FROM_CAIRO | T_LE | T_PALETTE | 8:
 			memcpy(src_buf, dest_buf, w);
 			break;
-		case 24:
+		case T_FROM_CAIRO | T_LE | T_RGB | 24:
 			bc_rgbi_rgb(dest_buf, src_buf, w);
 			break;
-		case 25:
+		case T_FROM_CAIRO | T_LE | T_ARGB | 24 | T_A1 :
 			bc_rgbi_rgb(dest_buf, src_buf, w);
 			{
 				int j;
@@ -230,10 +248,18 @@ CODE:
 			}
 			bc_byte_mono_cr( mask_buf_byte, mask_buf, w, colorref_byte);
 			break;
-		case 1024:
+		case T_FROM_CAIRO | T_LE | T_ARGB | 24 | T_A8 :
+			bc_rgbi_rgb(dest_buf, src_buf, w);
+			{
+				int j;
+				Byte * alpha = dest_buf + 3;
+				for (j = 0; j < w; j++, alpha += 4) mask_buf[j] = *alpha;
+			}
+			break;
+		case T_FROM_CAIRO | T_BE | T_RGB | 24:
 			bc_ibgr_rgb(dest_buf, src_buf, w);
 			break;
-		case 1025:
+		case T_FROM_CAIRO | T_BE | T_ARGB | 24 | T_A1:
 			bc_ibgr_rgb(dest_buf, src_buf, w);
 			{
 				int j;
@@ -242,18 +268,34 @@ CODE:
 			}
 			bc_byte_mono_cr( mask_buf_byte, mask_buf, w, colorref_byte);
 			break;
+		case T_FROM_CAIRO | T_BE | T_ARGB | 24 | T_A8:
+			bc_ibgr_rgb(dest_buf, src_buf, w);
+			{
+				int j;
+				Byte * alpha = dest_buf;
+				for (j = 0; j < w; j++, alpha += 4) mask_buf[j] = *alpha;
+			}
+			break;
 		/* to cairo surface */
-		case 101:
+		case T_TO_CAIRO | T_LE | T_PALETTE | 1:
 			rev_memcpy(dest_buf, src_buf, stride);
 			invert(dest_buf, stride);
 			break;
-		case 108:
+		case T_TO_CAIRO | T_LE | T_PALETTE | 8:
 			memcpy(dest_buf, src_buf, w);
 			break;
-		case 124:
+		case T_TO_CAIRO | T_LE | T_RGB | 24:
 			bc_rgb_rgbi(src_buf, dest_buf, w);
 			break;
-		case 125:
+		case T_TO_CAIRO | T_LE | T_ARGB | 24 | T_A0:
+			bc_rgb_rgbi(src_buf, dest_buf, w);
+			{
+				int j;
+				Byte * alpha = dest_buf + 3;
+				for (j = 0; j < w; j++, alpha += 4) *alpha = 0xff;
+			}
+			break;
+		case T_TO_CAIRO | T_LE | T_ARGB | 24 | T_A1:
 			bc_rgb_rgbi(src_buf, dest_buf, w);
 			bc_mono_byte_cr( mask_buf, mask_buf_byte, w, colorref_mono);
 			{
@@ -262,18 +304,26 @@ CODE:
 				for (j = 0; j < w; j++, alpha += 4) *alpha = mask_buf_byte[j];
 			}
 			break;
-		case 126:
+		case T_TO_CAIRO | T_LE | T_ARGB | 24 | T_A8:
 			bc_rgb_rgbi(src_buf, dest_buf, w);
 			{
 				int j;
 				Byte * alpha = dest_buf + 3;
+				for (j = 0; j < w; j++, alpha += 4) *alpha = mask_buf[j];
+			}
+			break;
+		case T_TO_CAIRO | T_BE | T_RGB | 24:
+			bc_rgb_ibgr(src_buf, dest_buf, w);
+			break;
+		case T_TO_CAIRO | T_BE | T_ARGB | 24 | T_A0:
+			bc_rgb_ibgr(src_buf, dest_buf, w);
+			{
+				int j;
+				Byte * alpha = dest_buf;
 				for (j = 0; j < w; j++, alpha += 4) *alpha = 0xff;
 			}
 			break;
-		case 1124:
-			bc_rgb_ibgr(src_buf, dest_buf, w);
-			break;
-		case 1125:
+		case T_TO_CAIRO | T_BE | T_ARGB | 24 | T_A1:
 			bc_rgb_ibgr(src_buf, dest_buf, w);
 			bc_mono_byte_cr( mask_buf, mask_buf_byte, w, colorref_mono);
 			{
@@ -282,14 +332,16 @@ CODE:
 				for (j = 0; j < w; j++, alpha += 4) *alpha = mask_buf_byte[j];
 			}
 			break;
-		case 1126:
+		case T_TO_CAIRO | T_BE | T_ARGB | 24 | T_A8:
 			bc_rgb_ibgr(src_buf, dest_buf, w);
 			{
 				int j;
 				Byte * alpha = dest_buf;
-				for (j = 0; j < w; j++, alpha += 4) *alpha = 0xff;
+				for (j = 0; j < w; j++, alpha += 4) *alpha = mask_buf[i];
 			}
 			break;
+		default:
+			croak("panic: unknown conversion %x", selector);
 		}
 	}
 	if (mask_buf_byte) free( mask_buf_byte);

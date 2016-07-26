@@ -82,12 +82,11 @@ sub fill_star {
 }
 
 
-my $w = Prima::Widget->new(
+my $w = Prima::MainWindow->new(
 	layered => 1,
 	text => 'Cairo - star & ring',
 	size => [300,300],
 	backColor => 0,
-	onMouseDown => sub { exit },
 	onPaint => sub {
 		my ( $self, $canvas ) = @_;
 		$self->clear;
