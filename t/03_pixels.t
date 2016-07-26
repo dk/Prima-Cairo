@@ -86,7 +86,6 @@ $original = Prima::Icon->create(
 	data        => "\x10\x20\x30\x40\x50\x60\x70\x80\x90\xa0\xb0\xc0",
 	mask        => "\xc0\x00\x00\x00\x00\x00\x00\x00",
 	maskType    => im::bpp1,
-	autoMasking => am::None,
 );
 $surface = $original->to_cairo_surface;
 ok( $surface->status eq 'success', 'cairo argb32 surface ok');
@@ -117,7 +116,6 @@ $original = Prima::Icon->create(
 	data        => "\x10\x20\x30\x40\x50\x60\x70\x80\x90\xa0\xb0\xc0",
 	mask        => "\x00\x01\xFE\xFF",
 	maskType    => im::bpp8,
-	autoMasking => am::None,
 );
 $surface = $original->to_cairo_surface;
 ok( $surface->status eq 'success', 'cairo argb32 surface ok');
