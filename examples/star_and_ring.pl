@@ -81,23 +81,42 @@ sub fill_star {
   $cr->restore;
 }
 
-
+my $alpha = 0;
 my $w = Prima::MainWindow->new(
 	layered => 1,
+	buffered => 1,
 	text => 'Cairo - star & ring',
 	size => [300,300],
 	backColor => 0,
+	onMouseDown  => sub { shift->{grab} = 1 },
+	onMouseUp    => sub { shift->{grab} = 0 },
 	onPaint => sub {
 		my ( $self, $canvas ) = @_;
 		$self->clear;
 		my @size = $self->size;
                 my $cr = $canvas->cairo_context( transform => 0 );
-  		my $matrix = Cairo::Matrix->init_identity;
+  		$cr->translate ( $size[0]/2, $size[1]/2);
+		if ( $self-> {grab} ) {
+			my ( $x, $y ) = $self-> pointerPos;
+			$x -= $size[0]/2;
+			$y -= $size[1]/2;
+			$alpha = atan2($x, $y);
+		}
+		$cr->rotate( $alpha );
+  		$cr->translate ( -$size[0]/2, -$size[1]/2);
 		$cr->scale($size[0]/600,$size[1]/600);
-		$cr->transform ($matrix);
 
     		fill_star($cr);
     		fill_ring($cr);
 	}
 );
+
+$w-> insert( Timer => 
+	timeout => 5,
+	onTick  => sub {
+		$alpha += 0.001;
+		$alpha = 0 if $alpha > 6.28;
+		$w-> repaint;
+	}
+)-> start;
 run Prima;
