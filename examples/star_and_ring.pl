@@ -95,7 +95,8 @@ my $w = Prima::MainWindow->new(
 		$self->clear;
 		my @size = $self->size;
                 my $cr = $canvas->cairo_context( transform => 0 );
-  		$cr->translate ( $size[0]/2, $size[1]/2);
+		$cr->scale($size[0]/600,$size[1]/600);
+  		$cr->translate ( 300, 300 );
 		if ( $self-> {grab} ) {
 			my ( $x, $y ) = $self-> pointerPos;
 			$x -= $size[0]/2;
@@ -103,8 +104,7 @@ my $w = Prima::MainWindow->new(
 			$alpha = atan2($x, $y);
 		}
 		$cr->rotate( $alpha );
-  		$cr->translate ( -$size[0]/2, -$size[1]/2);
-		$cr->scale($size[0]/600,$size[1]/600);
+  		$cr->translate ( -300, -300);
 
     		fill_star($cr);
     		fill_ring($cr);
