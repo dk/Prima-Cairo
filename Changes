@@ -1,5 +1,8 @@
 Revision history for Perl module Prima-Cairo
 
+1.04 2016-08-22
+ - add alpha layering support
+
 1.03 2016-03-20
  - fixes for big-endian architecture
 
