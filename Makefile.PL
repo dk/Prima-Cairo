@@ -19,7 +19,7 @@ WriteMakefile(
 	CONFIGURE_REQUIRES => {
 		'ExtUtils::Depends'   => 0.2,
 		'ExtUtils::PkgConfig' => 1.0,
-		'Prima'               => 1.42,
+		'Prima'               => 1.48,
 	},
 	ABSTRACT_FROM	   => 'lib/Prima/Cairo.pm',
 	AUTHOR		   => 'Dmitry Karasik <dmitry@karasik.eu.org>',
