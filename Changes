@@ -1,5 +1,8 @@
 Revision history for Perl module Prima-Cairo
 
+1.05 2016-09-27
+ - bump required Prima version
+
 1.04 2016-08-22
  - add alpha layering support
 
