@@ -11,7 +11,7 @@ plan skip_all => 'No X display' if Prima::XOpenDisplay();
 eval "use Prima qw(Application Cairo)";
 die $@ if $@;
 
-plan tests => 3;
+plan tests => 4;
 
 sub draw
 {
@@ -45,6 +45,17 @@ $i1 = $b->image;
 draw($b);
 $i2 = $b->image;
 ok( $i1->data ne $i2->data, "monochrome DeviceBitmap");
+
+SKIP: {
+$::application->get_system_value( sv::LayeredWidgets ) or skip "ARGB not supported", 1;
+$b = Prima::DeviceBitmap->create(width => 10, height => 10, type => dbt::Layered);
+$b->fillPattern(fp::CloseDot);
+$b->bar(0,0,$b->size);
+$i1 = $b->icon;
+draw($b);
+$i2 = $b->icon;
+ok(( $i1->data ne $i2->data) && ($i1->mask ne $i2->mask), "argb DeviceBitmap");
+}
 
 $b = Prima::Image->create(width => 250, height => 250);
 $b->begin_paint;
