@@ -6,7 +6,8 @@ use strict;
 use warnings;
 use POSIX qw(ceil floor);
 use Time::HiRes qw(time);
-use Prima qw(Application MsgBox Cairo);
+use Prima qw(Application Cairo);
+use Prima::MsgBox;
 use FindBin qw($Bin);
 
 my ($use_inline_c, $libs);
