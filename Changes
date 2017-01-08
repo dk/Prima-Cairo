@@ -1,5 +1,8 @@
 Revision history for Perl module Prima-Cairo
 
+1.06 2017-01-08
+ - Support ARGB bitmaps
+
 1.05 2016-09-27
  - bump required Prima version
 
