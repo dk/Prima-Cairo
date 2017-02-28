@@ -57,6 +57,11 @@ http://karasik.eu.org/misc/cairo/pkgconfig.zip
 
 This setup is needed both for Cairo and Prima-Cairo.
 
+Debian/Ubuntu
+-------------
+
+apt-get install libextutils-pkgconfig-perl libcairo-dev libcairo-perl
+
 AUTHOR
 =====
 
