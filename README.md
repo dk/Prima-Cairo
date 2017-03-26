@@ -44,6 +44,7 @@ That requires libcairo binaries, includes, and pkg-config.
 In case you don't have cairo binaries and include files, grab them here:
 
 http://karasik.eu.org/misc/cairo/cairo-win32.zip .
+http://karasik.eu.org/misc/cairo/cairo-win64.zip .
 
 Hack lib/pkgconfig/cairo.pc and point PKG_CONFIG_PATH to the directory
 where it is located.
