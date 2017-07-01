@@ -4,6 +4,7 @@
 #include <DeviceBitmap.h>
 #include <Widget.h>
 #include <Image.h>
+#include <img_conv.h>
 #include <Icon.h>
 #include <Application.h>
 #include <Printer.h>
