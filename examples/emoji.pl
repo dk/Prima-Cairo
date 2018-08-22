@@ -58,7 +58,11 @@ $w->insert( AbstractListViewer =>
 
 		}
 		$self-> draw_item_background( $canvas, $x1, $y1, $x2, $y2, $prelight );
-		$cr->move_to( $x1 + $ih / 4, $self->height - $y1 - $ih / 4);
+		my $k = $cr->text_extents( chr($glyphs[$index]));
+		$cr->move_to(
+			$x1 + ( $x2 - $x1 - $k->{width}) / 2 - $k->{x_bearing}, 
+			$self->height - $y1 - ($y2 - $y1 - ($k->{height}))/2 - $k->{height} - $k->{y_bearing}
+		);
 		$cr->show_text( chr($glyphs[$index]));
 		my $tx = sprintf("%x", $glyphs[$index] );
 		$canvas-> text_out( $tx, $x1 + ( $x2 - $x1 - $canvas->get_text_width($tx)) / 2, $y1);
