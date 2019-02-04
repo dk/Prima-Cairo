@@ -120,6 +120,10 @@ sub cairo_context
 				0, $canvas->height
 			);
 			$context->transform($matrix);
+
+			$matrix = $context->get_font_matrix;
+			$matrix->scale(1,-1);
+			$context-> set_font_matrix($matrix);
 		}
 		return $context;
 	} else {
@@ -248,6 +252,17 @@ returns a context adapted for Prima, but if you want native cairo coordinate
 system call it like this:
 
    $canvas->cairo_context( transform => 0 );
+
+This also affect font rendering, so when Prima transform is used, Cairo font must 
+not be changed via
+
+   $cairo->set_font_size(18)
+
+but rather via
+
+   my $matrix = $cairo->get_font_matrix;
+   $matrix->scale(1.8, 1.8); # default cairo matrix is 10
+   $cairo->set_font_matrix($matrix);
 
 =item Cairo::ImageSurface::to_prima_image [ $class = Prima::Image ].
 
